@@ -17,8 +17,7 @@ const config = {
     'progress-bar'
   ],
   formatOptions: { snippetInterface: 'async-await' },
-  worldParameters: getWorldParams(),
-  publishQuiet: true
+  worldParameters: getWorldParams()
 };
 
 if (process.env.USE_ALLURE) {

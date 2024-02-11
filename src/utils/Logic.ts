@@ -233,15 +233,15 @@ export function generatePipelineReport(
         </thead>
       <tbody>
       ${Object.entries(attachments)
-        .map(
-          ([key, value]) => `
+          .map(
+            ([key, value]) => `
         <tr>
         <td>${key}</td>
             <td>${value}</td>
             </tr>
             `
-        )
-        .join('')}
+          )
+          .join('')}
       </tbody>
     </table>
     `
@@ -260,20 +260,19 @@ export function generatePipelineReport(
         </thead>
       <tbody>
       ${stepLog
-        .map(({ name, status }, index) => ({ name, status, nth: index + 1 }))
-        .filter(({ nth }) => nth === 1 || nth > stepLog.length - 5)
-        .map(
-          ({ name, status, nth }) => `
+          .map(({ name, status }, index) => ({ name, status, nth: index + 1 }))
+          .filter(({ nth }) => nth === 1 || nth > stepLog.length - 5)
+          .map(
+            ({ name, status, nth }) => `
         <tr>
         <td>${nth}.</td>
         <td>${name}</td>
-            <td style="color: ${status === 'PASSED' ? 'green' : 'red'};" alt="${status}">${
-            status === 'PASSED' ? '✔' : '✖'
-          }</td>
+            <td style="color: ${status === 'PASSED' ? 'green' : 'red'};" alt="${status}">${status === 'PASSED' ? '✔' : '✖'
+              }</td>
             </tr>
             `
-        )
-        .join('')}
+          )
+          .join('')}
   </tbody>
     </table>
       `;
@@ -281,9 +280,8 @@ export function generatePipelineReport(
     const accordionContent = [attachmentsTable + stepLogTable + imageTag].join('<br/>');
     const scenarioHtml = `
     <details>
-    <summary> <b style="color: ${status === 'PASSED' ? 'green' : 'red'};">${
-      status === 'PASSED' ? '✔' : '✖'
-    } ${name} </b></summary >
+    <summary> <b style="color: ${status === 'PASSED' ? 'green' : 'red'};">${status === 'PASSED' ? '✔' : '✖'
+      } ${name} </b></summary >
       ${accordionContent}
   </details>
     `;
@@ -380,4 +378,17 @@ export function generatePassword() {
 export function generateUniqueEmail(baseEmail: string): string {
   const timestamp = new Date().getTime();
   return `${baseEmail.split('@')[0]}.${timestamp}@${baseEmail.split('@')[1]}`;
+}
+
+type MailosaurParams = { subject?: string; sentTo?: string; receivedAfter?: Date; timeout?: number }
+export async function getLastMail(params: MailosaurParams = {}) {
+  // Available in the API tab of a server
+  const apiKey = 'SAVDhLDdHGQOiFw84ydfoxL3lSulWf6P';
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const MailosaurClient = require('mailosaur');
+  const mailosaur = new MailosaurClient(apiKey);
+
+  const email = await mailosaur.messages.get('0fxrlxug', params);
+  return email;
 }

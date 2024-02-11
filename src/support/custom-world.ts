@@ -72,21 +72,10 @@ export class CustomWorld extends World implements ICustomWorld {
     throw new Error("Couldn't find working selector");
   }
 
-  async fillInput(inputLabel: string, inputValue: string, selector: string | null = null) {
-    const finalSelector =
-      selector ??
-      `//*[label[normalize-space()="${inputLabel}" or contains(text(), "${inputLabel}") or .//text()="${inputLabel}"]]//input`;
-    const dashInsensitiveInputs = ['Username', 'Password'];
-    // If label in `dashSensitiveInputs`, will ignore dashes.
-    const inputIsDashInsensitive = dashInsensitiveInputs.find((dsi) => dsi.includes(inputLabel));
-    const values = inputIsDashInsensitive ? [inputValue] : inputValue.split('-');
-    for (let index = 0; index < values.length; index++) {
-      const locator = this.page.locator(finalSelector).nth(index);
-      await locator.focus();
-      while ((await locator.inputValue()) !== values[index]) {
-        await locator.fill(values[index]);
-      }
-    }
+  async fillInput(inputLabel: string, inputValue: string) {
+    const locator = this.page.locator(`//input[@placeholder="${inputLabel}"]`);
+    await locator.focus();
+    await locator.fill(inputValue);
   }
 
   async selectOption(selectValue: string, selectLabel: string, selector: string | null = null) {

@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { ICustomWorld } from '../support/custom-world';
-import { downloadFromUrl, nthToNumber } from '../utils/Logic';
+import { downloadFromUrl, getLastMail, nthToNumber } from '../utils/Logic';
 import { Given, Then, When } from '@cucumber/cucumber';
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { Context } from 'vm';
 // import { federalFormSections } from '../utils/_shared/Consts';
 
@@ -43,16 +43,9 @@ When('I close the current tab', async function (this: ICustomWorld) {
   }
 });
 
-Given('I am at the {string} page', async function (this: ICustomWorld, pagePath: string) {
-  let url = process.env.BASE_URL + pagePath;
-  let protocol = '';
-  const urlOrigin = url.replace(/^(https?|http):\/\//, (_match, capturedProtocol) => {
-    protocol = capturedProtocol + '://';
-    return '';
-  });
-  url = `${protocol}${process.env.BASIC_AUTH_CREDENTIALS}@${urlOrigin}`;
-  const authenticatedUrl = new URL(url);
-  await this.page.goto(authenticatedUrl.href);
+Given('I go to the {string} page', async function (this: ICustomWorld, pagePath: string) {
+  const url = process.env.BASE_URL + pagePath;
+  await this.page.goto(url);
 });
 
 When(
@@ -68,10 +61,11 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
   const selector =
     '(' +
     [
-      `//a[.//text()="${btnText}"]`,
-      `//input[@value="${btnText}"]`,
-      `//button[text()="${btnText}"]`,
-      `//a[contains(normalize-space(),"${btnText}")]`
+      `//a[text()="${btnText}"]`,
+      `//button[text()="${btnText}"]`
+      // `//input[@value="${btnText}"]`,
+      // `//button[text()="${btnText}"]`,
+      // `//a[contains(normalize-space(),"${btnText}")]`
     ].join(' | ') +
     ')';
   const locator = this.page.locator(selector);
@@ -96,17 +90,17 @@ When(
   }
 );
 
-When(
-  'I input {string} under {string} for {string}',
-  async function (this: ICustomWorld, inputValue: string, inputLabel: string, boxTitle: string) {
-    if (inputValue) {
-      const boxTitle2 = boxTitle.replaceAll('...', '');
-      const inputLabel2 = inputLabel.replaceAll('...', '');
-      const selector = `//div[@class="card" and div[b[contains(text(),"${boxTitle2}")]]]//*[label[normalize-space()="${inputLabel2}" or contains(text(), "${inputLabel2}") or .//text()="${inputLabel2}"]]//input`;
-      await this.fillInput(inputLabel2, inputValue, selector);
-    }
-  }
-);
+// When(
+//   'I input {string} under {string} for {string}',
+//   async function (this: ICustomWorld, inputValue: string, inputLabel: string, boxTitle: string) {
+//     if (inputValue) {
+//       const boxTitle2 = boxTitle.replaceAll('...', '');
+//       const inputLabel2 = inputLabel.replaceAll('...', '');
+//       const selector = `//div[@class="card" and div[b[contains(text(),"${boxTitle2}")]]]//*[label[normalize-space()="${inputLabel2}" or contains(text(), "${inputLabel2}") or .//text()="${inputLabel2}"]]//input`;
+//       await this.fillInput(inputLabel2, inputValue, selector);
+//     }
+//   }
+// );
 
 When(
   'I input {string} under {string}',
@@ -119,25 +113,25 @@ When(
 );
 
 When(
-  'I attach the value for the {string} input as {string}',
+  'I save the value for the {string} input as {string}',
   async function (this: ICustomWorld, inputLabel: string, attachmentKey: string) {
-    const inputLabel2 = inputLabel.replaceAll('...', '');
-    const inputSelector = `//*[label[normalize-space()="${inputLabel2}" or contains(text(), "${inputLabel2}") or .//text()="${inputLabel2}"]]//input`;
+    const inputLabelTrimmed = inputLabel.replaceAll('...', '');
+    const inputSelector = `//input[@placeholder="${inputLabelTrimmed}"]`;
     const inputValue = await this.page.locator(inputSelector).inputValue();
     this.attachments[attachmentKey] = inputValue;
   }
 );
 
-When(
-  'I select {string} under {string} for {string}',
-  async function (this: ICustomWorld, selectValue: string, selectLabel: string, boxTitle: string) {
-    if (selectValue) {
-      const boxTitle2 = boxTitle.replaceAll('...', '');
-      const selector = `//div[@class="card" and div[b[contains(text(),"${boxTitle2}")]]]//*[label[text()="${selectLabel}" or .//text()="${selectLabel}"]]//select`;
-      await this.selectOption(selectValue, selectLabel, selector);
-    }
-  }
-);
+// When(
+//   'I select {string} under {string} for {string}',
+//   async function (this: ICustomWorld, selectValue: string, selectLabel: string, boxTitle: string) {
+//     if (selectValue) {
+//       const boxTitle2 = boxTitle.replaceAll('...', '');
+//       const selector = `//div[@class="card" and div[b[contains(text(),"${boxTitle2}")]]]//*[label[text()="${selectLabel}" or .//text()="${selectLabel}"]]//select`;
+//       await this.selectOption(selectValue, selectLabel, selector);
+//     }
+//   }
+// );
 
 When(
   'I select {string} under {string}',
@@ -189,67 +183,6 @@ When(
 //     }
 //   }
 // });
-
-When('I continue until the {string} step', async function (this: ICustomWorld, stepName: string) {
-  while (true) {
-    const titleLocator = this.page.locator('h1');
-    const currentStepTitle = await titleLocator.textContent();
-    const currentStepTitleTrimmed = currentStepTitle.trim();
-    if (currentStepTitleTrimmed === stepName) {
-      return;
-    }
-    if (currentStepTitleTrimmed === 'Federal Refund') {
-      await this.pickOption(
-        'How would you like to receive your federal refund?',
-        'Direct deposit to a bank account'
-      );
-    } else if (currentStepTitleTrimmed === 'ezService Fee') {
-      await this.pickOption('Please select from the following payment options', 'Credit card');
-    } else if (currentStepTitleTrimmed === 'ezCheckout') {
-      await this.fillInput('Card number', '9999-9999-9999-9999', null);
-      await this.selectOption('Visa', 'Card type', null);
-      await this.selectOption('April-2026', 'Expiration date', null);
-      await this.fillInput('Security code', '999', null);
-    } else if (currentStepTitle === 'Identity Verification') {
-      await this.pickOption(
-        'Tell us how you would like to receive a verification code',
-        'email to...'
-      );
-      // Pick "email to..." under "Tell us how you would like to receive a verification code"
-    }
-    const stepsToWaitFor = [
-      'Federal Signature',
-      'Audit Defense Protection',
-      'Amended Return Insurance',
-      'Viewing Your Tax Return'
-    ];
-    if (stepsToWaitFor.includes(currentStepTitleTrimmed)) {
-      await this.page.waitForTimeout(5000);
-    }
-    if (currentStepTitleTrimmed === 'Identity Verification') {
-      const errorMsg =
-        'The system needs human validation to bypass the "Identity Verification" step. Login and create';
-      this.attachments['Error'] = errorMsg;
-      throw Error(errorMsg);
-    }
-    const selector =
-      '(' +
-      [
-        `//a[.//text()="Continue"]`,
-        `//input[@value="Continue"]`,
-        `//button[text()="Continue"]`,
-        `//a[.//text()="Save & Continue"]`,
-        `//input[@value="Save & Continue"]`,
-        `//button[text()="Save & Continue"]`,
-        `//input[@value="Submit Payment"]`
-      ].join(' | ') +
-      ')';
-    const locator = this.page.locator(selector);
-    await locator.scrollIntoViewIfNeeded();
-    await locator.click();
-    await this.page.waitForLoadState();
-  }
-});
 
 When(
   'I click {string} under {string}',
@@ -386,3 +319,50 @@ Then('I solve the reCaptcha', async function (this: ICustomWorld) {
   // @ts-ignore
   await this.page.solveRecaptchas();
 });
+
+Then(
+  'I input the value saved as {string} under the {string} input',
+  async function (this: ICustomWorld, attachmentKey: string, inputLabel: string) {
+    const inputValue = this.attachments[attachmentKey];
+    if (inputValue) {
+      const inputLabelTrimmed = inputLabel.replaceAll('...', '');
+      await this.fillInput(inputLabelTrimmed, inputValue, null);
+    }
+  }
+);
+
+Then(
+  'I go to the {string} link of the {string} email sent to {string}',
+  async function (
+    this: ICustomWorld,
+    btnText: string,
+    emailSubject: string,
+    recipientEmail: string
+  ) {
+    const email = await getLastMail({ subject: emailSubject, sentTo: recipientEmail });
+    const { links } = email.html;
+    const link = links.find(
+      (linkObj: { text: string }) => linkObj['text'].trim() === btnText
+    )?.href;
+    await this.page.goto(link);
+  }
+);
+
+Then('I am at the {string} feed', async function (this: ICustomWorld, titleText: string) {
+  const feedTitleSelector = `(//div[contains(@class, "bold") and contains(@class, "3xl") and contains(text(), "${titleText}")])[1]`;
+  const locator = await this.page.locator(feedTitleSelector);
+  await expect(locator).toBeVisible();
+});
+
+Then(
+  'I wait for {string} to receive a {string} email',
+  async function (this: ICustomWorld, recipientEmail: string, emailSubject: string) {
+    await this.page.waitForTimeout(3000);
+    const email = await getLastMail({
+      subject: emailSubject,
+      sentTo: recipientEmail,
+      timeout: 7000
+    });
+    console.log(email.received);
+  }
+);
