@@ -233,15 +233,15 @@ export function generatePipelineReport(
         </thead>
       <tbody>
       ${Object.entries(attachments)
-          .map(
-            ([key, value]) => `
+        .map(
+          ([key, value]) => `
         <tr>
         <td>${key}</td>
             <td>${value}</td>
             </tr>
             `
-          )
-          .join('')}
+        )
+        .join('')}
       </tbody>
     </table>
     `
@@ -260,19 +260,20 @@ export function generatePipelineReport(
         </thead>
       <tbody>
       ${stepLog
-          .map(({ name, status }, index) => ({ name, status, nth: index + 1 }))
-          .filter(({ nth }) => nth === 1 || nth > stepLog.length - 5)
-          .map(
-            ({ name, status, nth }) => `
+        .map(({ name, status }, index) => ({ name, status, nth: index + 1 }))
+        .filter(({ nth }) => nth === 1 || nth > stepLog.length - 5)
+        .map(
+          ({ name, status, nth }) => `
         <tr>
         <td>${nth}.</td>
         <td>${name}</td>
-            <td style="color: ${status === 'PASSED' ? 'green' : 'red'};" alt="${status}">${status === 'PASSED' ? '✔' : '✖'
-              }</td>
+            <td style="color: ${status === 'PASSED' ? 'green' : 'red'};" alt="${status}">${
+            status === 'PASSED' ? '✔' : '✖'
+          }</td>
             </tr>
             `
-          )
-          .join('')}
+        )
+        .join('')}
   </tbody>
     </table>
       `;
@@ -280,8 +281,9 @@ export function generatePipelineReport(
     const accordionContent = [attachmentsTable + stepLogTable + imageTag].join('<br/>');
     const scenarioHtml = `
     <details>
-    <summary> <b style="color: ${status === 'PASSED' ? 'green' : 'red'};">${status === 'PASSED' ? '✔' : '✖'
-      } ${name} </b></summary >
+    <summary> <b style="color: ${status === 'PASSED' ? 'green' : 'red'};">${
+      status === 'PASSED' ? '✔' : '✖'
+    } ${name} </b></summary >
       ${accordionContent}
   </details>
     `;
@@ -377,10 +379,15 @@ export function generatePassword() {
 
 export function generateUniqueEmail(baseEmail: string): string {
   const timestamp = new Date().getTime();
-  return `${baseEmail.split('@')[0]}.${timestamp}@${baseEmail.split('@')[1]}`;
+  return `${baseEmail.split('@')[0]}.${timestamp}@${'0fxrlxug.mailosaur.net'}`;
 }
 
-type MailosaurParams = { subject?: string; sentTo?: string; receivedAfter?: Date; timeout?: number }
+type MailosaurParams = {
+  subject?: string;
+  sentTo?: string;
+  receivedAfter?: Date;
+  timeout?: number;
+};
 export async function getLastMail(params: MailosaurParams = {}) {
   // Available in the API tab of a server
   const apiKey = 'SAVDhLDdHGQOiFw84ydfoxL3lSulWf6P';
@@ -391,4 +398,36 @@ export async function getLastMail(params: MailosaurParams = {}) {
 
   const email = await mailosaur.messages.get('0fxrlxug', params);
   return email;
+}
+
+export function generateBuildName() {
+  return 'My initial build';
+}
+
+export function getLTBuildUrl(buildId: string) {
+  console.log(buildId);
+  return 'https://automation.lambdatest.com/share?shareId=PFDHILHXPR34H4L5RN9WEH8D3WVIGQT64YARJ1WNI0EJNPGB6DX2SOYMJ1N31MIL';
+}
+
+export function getLTTestUrl(testId: string) {
+  console.log(testId);
+  return 'https://automation.lambdatest.com/share?shareId=93WYZ4EP27KN4018BG9LZ4BTPPNAFHK8X6U82J9N70ZISCO00WIMG6F09HX8FGK4';
+}
+
+export function saveToJsonFile(filename, data) {
+  // Convert the data to JSON format
+  const jsonData = JSON.stringify(data, null, 2); // null and 2 for pretty formatting
+
+  // Get the directory name from the filename
+  const directory = dirname(filename);
+
+  // Create the directory if it doesn't exist
+  if (!existsSync(directory)) {
+    mkdirSync(directory, { recursive: true });
+  }
+
+  // Write the JSON data to the file
+  writeFileSync(filename, jsonData, 'utf8');
+
+  console.log(`Data saved to ${filename}`);
 }

@@ -11,7 +11,7 @@ export interface ICustomWorld extends World {
   page: Page;
   attachments: { [key: string]: any };
 
-  testName?: string;
+  testSlug?: string;
   startTime?: Date;
 
   server?: APIRequestContext;
@@ -29,7 +29,7 @@ export interface ICustomWorld extends World {
     options?: IScreenshotOptions
   ): Promise<void>;
   getWorkingSelector(selectors: string[], timeout?: number): Promise<string>;
-  fillInput(inputLabel: string, inputValue: string, selector: string | null): Promise<void>;
+  fillInput(inputLabel: string, inputValue: string): Promise<void>;
   selectOption(selectValue: string, selectLabel: string, selector: string | null): Promise<void>;
   pickOption(pickValue: string, labelText: string): Promise<void>;
 }

@@ -1,6 +1,12 @@
 /* eslint-disable no-console */
 import { ICustomWorld } from '../support/custom-world';
-import { downloadFromUrl, getLastMail, nthToNumber } from '../utils/Logic';
+import {
+  downloadFromUrl,
+  generateUniqueEmail,
+  getFakerValue,
+  getLastMail,
+  nthToNumber
+} from '../utils/Logic';
 import { Given, Then, When } from '@cucumber/cucumber';
 import { Page, expect } from '@playwright/test';
 import { Context } from 'vm';
@@ -62,7 +68,8 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
     '(' +
     [
       `//a[text()="${btnText}"]`,
-      `//button[text()="${btnText}"]`
+      `(//button[normalize-space()="${btnText}"])[1]`,
+      `//button[.//text()="${btnText}"]`
       // `//input[@value="${btnText}"]`,
       // `//button[text()="${btnText}"]`,
       // `//a[contains(normalize-space(),"${btnText}")]`
@@ -106,8 +113,17 @@ When(
   'I input {string} under {string}',
   async function (this: ICustomWorld, inputValue: string, inputLabel: string) {
     if (inputValue) {
-      const inputLabel2 = inputLabel.replaceAll('...', '');
-      await this.fillInput(inputLabel2, inputValue, null);
+      if (inputLabel === 'Title') {
+        await this.page.locator('.node-title').click({ force: true });
+        // Loop through each character of the string
+        for (let i = 0; i < inputValue.length; i++) {
+          // Type the current character
+          await this.page.keyboard.type(inputValue[i]);
+        }
+      } else {
+        const inputLabel2 = inputLabel.replaceAll('...', '');
+        await this.fillInput(inputLabel2, inputValue);
+      }
     }
   }
 );
@@ -247,34 +263,6 @@ When('I raise an error saying {string}', async function (this: ICustomWorld, err
   throw new Error(errorText);
 });
 
-When('I reset my account if I have already e-filed', async function (this: ICustomWorld) {
-  const efileStatusSelector = '//b[contains(text(), "Your return has been e-filed")]';
-  const efileSatus = this.page.locator(efileStatusSelector);
-  if (await efileSatus.count()) {
-    await this.page.locator('//a[contains(text(), "Reset account")]').click();
-    const usernameInputLabel = 'Username';
-    const userNameInputValue = this.attachments['username'];
-    const usernameInputSelector = `//*[label[normalize-space()="${usernameInputLabel}" or contains(text(), "${usernameInputLabel}") or .//text()="${usernameInputLabel}"]]//input`;
-    await this.fillInput(usernameInputLabel, userNameInputValue, usernameInputSelector);
-    const passwordInputLabel = 'Password';
-    const passwordInputValue = this.attachments['password'];
-    const passwordInputSelector = `//*[label[normalize-space()="${passwordInputLabel}" or contains(text(), "${passwordInputLabel}") or .//text()="${passwordInputLabel}"]]//input`;
-    await this.fillInput(passwordInputLabel, passwordInputValue, passwordInputSelector);
-    const continueBtnSelector =
-      '(' + [`//a[.//text()="Continue"]`, `//input[@value="Continue"]`].join(' | ') + ')';
-    await this.page.locator(continueBtnSelector).click();
-  }
-});
-
-When('I validate my account if prompted to', async function (this: ICustomWorld) {
-  // try {
-  await this.page.waitForSelector('//h1[contains(text(),"Help Us Verify Your Identity")]', {
-    timeout: 5000
-  });
-  await this.pickOption('...@...', 'Help Us Verify Your Identity');
-  // } catch (e) { }
-});
-
 Then('I see the {string} step', async function (this: ICustomWorld, stepTitle: string) {
   await this.page.waitForSelector(`//h1[contains(text(),"${stepTitle.replace('...', '')}")]`, {
     timeout: 5000
@@ -309,7 +297,7 @@ Then(
     const inputValue = this.attachments[attachmentKey];
     if (inputValue) {
       const inputLabel2 = inputLabel.replaceAll('...', '');
-      await this.fillInput(inputLabel2, inputValue, null);
+      await this.fillInput(inputLabel2, inputValue);
     }
   }
 );
@@ -326,7 +314,7 @@ Then(
     const inputValue = this.attachments[attachmentKey];
     if (inputValue) {
       const inputLabelTrimmed = inputLabel.replaceAll('...', '');
-      await this.fillInput(inputLabelTrimmed, inputValue, null);
+      await this.fillInput(inputLabelTrimmed, inputValue);
     }
   }
 );
@@ -348,8 +336,26 @@ Then(
   }
 );
 
+Then(
+  'I go to the {string} link of the {string} email sent to the email saved as {string}',
+  async function (
+    this: ICustomWorld,
+    btnText: string,
+    emailSubject: string,
+    recipientEmailKey: string
+  ) {
+    const recipientEmail = this.attachments[recipientEmailKey];
+    const email = await getLastMail({ subject: emailSubject, sentTo: recipientEmail });
+    const { links } = email.html;
+    const link = links.find(
+      (linkObj: { text: string }) => linkObj['text'].trim() === btnText
+    )?.href;
+    await this.page.goto(link);
+  }
+);
+
 Then('I am at the {string} feed', async function (this: ICustomWorld, titleText: string) {
-  const feedTitleSelector = `(//div[contains(@class, "bold") and contains(@class, "3xl") and contains(text(), "${titleText}")])[1]`;
+  const feedTitleSelector = `//a[contains(@href, 'feed')]//div[text()="${titleText}"]`;
   const locator = await this.page.locator(feedTitleSelector);
   await expect(locator).toBeVisible();
 });
@@ -358,11 +364,49 @@ Then(
   'I wait for {string} to receive a {string} email',
   async function (this: ICustomWorld, recipientEmail: string, emailSubject: string) {
     await this.page.waitForTimeout(3000);
-    const email = await getLastMail({
+    await getLastMail({
       subject: emailSubject,
       sentTo: recipientEmail,
       timeout: 7000
     });
-    console.log(email.received);
+  }
+);
+
+Then(
+  'I wait for the email saved as {string} to receive a {string} email',
+  async function (this: ICustomWorld, recipientEmailKey: string, emailSubject: string) {
+    const recipientEmail = this.attachments[recipientEmailKey];
+    await this.page.waitForTimeout(3000);
+    await getLastMail({
+      subject: emailSubject,
+      sentTo: recipientEmail,
+      timeout: 7000
+    });
+  }
+);
+
+When(
+  'I input a valid {string} under {string}',
+  async function (this: ICustomWorld, valueType: string, inputLabel: string) {
+    let value: string;
+    if (valueType === 'email') {
+      const baseEmail = getFakerValue('name') + '@0fxrlxug.mailosaur.net';
+      value = generateUniqueEmail(baseEmail);
+    } else {
+      value = getFakerValue('valueType');
+    }
+    await this.fillInput(inputLabel, value);
+  }
+);
+
+Then(
+  'I see a toast message saying {string}',
+  async function (this: ICustomWorld, toastMsg: string) {
+    const selector = `//div[div[span//*[local-name()='svg']] and button]//div/span[contains(text(),"${toastMsg.replaceAll(
+      '...',
+      ''
+    )}")]`;
+    const locator = await this.page.locator(selector);
+    await expect(locator).toBeVisible();
   }
 );
