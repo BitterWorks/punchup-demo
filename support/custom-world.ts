@@ -1,4 +1,4 @@
-import { compareToBaseImage, elementSelectorToFileName } from '../utils/Logic';
+import { compareToBaseImage, elementSelectorToFileName } from './utils';
 import { IScreenshotOptions } from '../utils/Types';
 import { APIRequestContext, BrowserContext, Page, PlaywrightTestOptions } from '@playwright/test';
 import * as messages from '@cucumber/messages';
@@ -9,6 +9,7 @@ export interface ICustomWorld extends World {
   feature?: messages.Pickle;
   context?: BrowserContext;
   page: Page;
+  testRunId: string;
   attachments: { [key: string]: any };
 
   testSlug?: string;
@@ -18,7 +19,6 @@ export interface ICustomWorld extends World {
 
   playwrightOptions?: PlaywrightTestOptions;
 
-  envName?: string;
   // Testing utils
   username?: string;
 
@@ -29,13 +29,14 @@ export interface ICustomWorld extends World {
     options?: IScreenshotOptions
   ): Promise<void>;
   getWorkingSelector(selectors: string[], timeout?: number): Promise<string>;
-  fillInput(inputLabel: string, inputValue: string): Promise<void>;
+  fillInput(inputLabel: string, inputValue: string, selector: string | null): Promise<void>;
   selectOption(selectValue: string, selectLabel: string, selector: string | null): Promise<void>;
   pickOption(pickValue: string, labelText: string): Promise<void>;
 }
 
 export class CustomWorld extends World implements ICustomWorld {
   page: Page;
+  testRunId: string;
   feature: messages.Pickle;
   constructor(options: IWorldOptions) {
     super(options);
@@ -43,6 +44,19 @@ export class CustomWorld extends World implements ICustomWorld {
   debug = false;
   params = {};
   attachments = {};
+
+  async setTestStatus(status, remark) {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+    await this.page.evaluate(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars, prettier/prettier
+      (_) => { },
+      // eslint-disable-next-line indent
+      `lambdatest_action: ${JSON.stringify({
+        action: 'setTestStatus',
+        arguments: { status, remark }
+      })}`
+    );
+  }
 
   async validateElementAppeareance(
     selector: string,
@@ -56,7 +70,7 @@ export class CustomWorld extends World implements ICustomWorld {
     const mask = maskSelectors.map((selector) => this.page.locator(selector));
     const screenshot = await this.page
       .locator(selector)
-      .screenshot({ timeout: 5000, path: `temp/${path}`, mask });
+      .screenshot({ timeout: 5000, path: `temp/${this.testRunId}/{path}`, mask });
     await compareToBaseImage(this, path, screenshot, options);
   }
 
@@ -72,10 +86,21 @@ export class CustomWorld extends World implements ICustomWorld {
     throw new Error("Couldn't find working selector");
   }
 
-  async fillInput(inputLabel: string, inputValue: string) {
-    const locator = this.page.locator(`//input[@placeholder="${inputLabel}"]`);
-    await locator.focus();
-    await locator.fill(inputValue);
+  async fillInput(inputLabel: string, inputValue: string, selector: string | null = null) {
+    const finalSelector =
+      selector ??
+      `//*[label[normalize-space()="${inputLabel}" or contains(text(), "${inputLabel}") or .//text()="${inputLabel}"]]//input`;
+    const dashInsensitiveInputs = ['Username', 'Password'];
+    // If label in `dashSensitiveInputs`, will ignore dashes.
+    const inputIsDashInsensitive = dashInsensitiveInputs.find((dsi) => dsi.includes(inputLabel));
+    const values = inputIsDashInsensitive ? [inputValue] : inputValue.split('-');
+    for (let index = 0; index < values.length; index++) {
+      const locator = this.page.locator(finalSelector).nth(index);
+      await locator.focus();
+      while ((await locator.inputValue()) !== values[index]) {
+        await locator.fill(values[index]);
+      }
+    }
   }
 
   async selectOption(selectValue: string, selectLabel: string, selector: string | null = null) {

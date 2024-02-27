@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
 import { ICustomWorld } from './custom-world';
 import { config } from './config';
-import { getLTBuildUrl, getLTTestUrl, saveToJsonFile } from '../utils/Logic';
+import { getEstTime, getLTBuildUrl, getLTTestUrl, saveToJsonFile } from './utils';
 import {
   Before,
   After,
   BeforeAll,
   AfterAll,
-  Status,
+  // Status,
   setDefaultTimeout,
   AfterStep
 } from '@cucumber/cucumber';
@@ -18,7 +18,8 @@ import {
   FirefoxBrowser,
   webkit,
   WebKitBrowser,
-  ConsoleMessage
+  ConsoleMessage,
+  request
 } from '@playwright/test';
 import { ITestCaseHookParameter } from '@cucumber/cucumber/lib/support_code_library_builder/types';
 import { ensureDir } from 'fs-extra';
@@ -35,7 +36,7 @@ declare global {
 }
 
 // Set to a high value because a full step can take more than 1 minute;
-setDefaultTimeout(process.env.PWDEBUG ? -1 : 10 * 60 * 1000);
+setDefaultTimeout(process.env.PWDEBUG ? -1 : 30 * 1000);
 
 type ScenarioType = {
   status: string;
@@ -43,6 +44,8 @@ type ScenarioType = {
   attachments: string;
   stepLog: { name: string; status: string }[];
   imageString?: string;
+  testId?: string;
+  url?: string;
 };
 
 type JsonReportType = {
@@ -50,11 +53,13 @@ type JsonReportType = {
   scenarios: ScenarioType[];
   buildId?: string;
   url?: string;
+  status?: 'PASSED' | 'FAILED';
 };
 
+let failedScenariosCount = 0;
 let stepLog = [];
 const scenariosLog = [];
-const buildName = 'Test Build';
+const buildName: string = getEstTime();
 const jsonReport: JsonReportType = {
   buildName,
   scenarios: []
@@ -101,7 +106,13 @@ Before({ tags: '@debug' }, async function (this: ICustomWorld) {
 });
 
 Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
+  // console.log(process.env);
   if (config.browser === 'LT') {
+    // const playwrightClientVersion = cp
+    //   .execSync('npx playwright --version')
+    //   .toString()
+    //   .trim()
+    //   .split(' ')[1];
     const capabilities = {
       browserName: 'Chrome', // Browsers allowed: `Chrome`, `MicrosoftEdge`, `pw-chromium`, `pw-firefox` and `pw-webkit`
       browserVersion: 'latest',
@@ -114,7 +125,11 @@ Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
         network: true,
         video: true,
         console: true,
-        tunnel: false
+        tunnel: false // Add tunnel configuration if testing locally hosted webpage
+        // tunnelName: '', // Optional,
+        // geoLocation: 'US',
+        // idleTimeout: 300,
+        // playwrightClientVersion
       }
     };
     browser = await chromium.connect({
@@ -125,6 +140,7 @@ Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
   }
 
   // Set test run variables
+  this.testRunId = testRunId;
   this.startTime = new Date();
   this.testSlug = pickle.name.replace(/\W/g, '-');
   // customize the [browser context](https://playwright.dev/docs/next/api/class-browser#browsernewcontextoptions)
@@ -135,6 +151,13 @@ Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
     acceptDownloads: true,
     recordVideo: process.env.PWVIDEO && config.browser !== 'LT' ? { dir: videosPath } : undefined,
     viewport: config.browser === 'LT' ? { width: 1920, height: 1080 } : { width: 1200, height: 800 }
+  });
+  // await this.context.route('**/*', (route) => {
+  //   route.continue();
+  // });
+  this.server = await request.newContext({
+    // All requests we send go to this API endpoint.
+    // baseURL: import.meta.env.BACKEND_URL
   });
 
   //
@@ -150,21 +173,30 @@ Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
     // Get LambdaTest test ID
     const rawResponse = await this.page.evaluate(
       // eslint-disable-next-line @typescript-eslint/no-empty-function, prettier/prettier, @typescript-eslint/no-unused-vars
-      (_) => {},
+      (_) => { },
       // eslint-disable-next-line prettier/prettier
       `lambdatest_action: ${JSON.stringify({ action: 'getTestDetails' })}`
     );
     const formattedResponse = JSON.parse(rawResponse as unknown as string);
     jsonReport['buildId'] = formattedResponse['data']['build_id'];
   } else {
-    // Block slowing unnecessary requests
+    // Block slowing non-key requests
     const domainBlacklist = [
+      'seal.digicert.com',
+      'bat.bing.com',
+      'fonts.gstatic.com',
+      'dev.visualwebsiteoptimizer.com',
+      'connect.facebook.net',
       'www.google.com.ar',
       'www.googletagmanager.com',
       'www.google-analytics.com',
       'www.fonts.gstatic.com',
+      'www.tags.srv.stackadapt.com',
       'www.googleadservices.com',
+      'privacy-policy.truste.com',
+      'www.wheelofpopups.com',
       'www.googleoptimize.com',
+      'tags.srv.stackadapt.com',
       'fonts.googleapis.com'
     ];
     const regexStrings = domainBlacklist.map((domain) => `^https://${domain}.*`);
@@ -197,17 +229,14 @@ After(async function (
   if (result) {
     await this.attach(`Status: ${result?.status}. Duration:${result.duration?.seconds}s`);
 
-    if (result.status !== Status.PASSED) {
-      const image = await this.page?.screenshot({ fullPage: true });
-      imageString = image.toString('base64');
-      // Replace : with _ because colons aren't allowed in Windows paths
-      const timePart = this.startTime?.toISOString().split('.')[0].replaceAll(':', '_');
-
-      image && (await this.attach(image, 'image/png'));
-      await this.context?.tracing.stop({
-        path: `${tracesDir}/${this.testSlug}-${timePart}trace.zip`
-      });
-    }
+    // Take screenshot on failure
+    // if (result.status !== Status.PASSED) {
+    //   const image = await this.page?.screenshot({ fullPage: true });
+    //   if (image) {
+    // Get Base64 or deploy to bucket
+    //     imageString = image.toString('base64');
+    //   }
+    // }
   }
   // add scenario to log
   const thisScenario = {
@@ -215,9 +244,33 @@ After(async function (
     name: `${gherkinDocument.feature.name} | ${pickle.name}`,
     attachments: this.attachments,
     stepLog,
-    imageString,
-    url: getLTTestUrl('test')
+    imageString
   };
+  // Set LT-related variables
+  if (config.browser === 'LT') {
+    // Get LambdaTest testId and recording url
+    const rawResponse = await this.page.evaluate(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function, prettier/prettier, @typescript-eslint/no-unused-vars
+      (_) => { },
+      // eslint-disable-next-line prettier/prettier
+      `lambdatest_action: ${JSON.stringify({ action: 'getTestDetails' })}`
+    );
+    const formattedResponse = JSON.parse(rawResponse as unknown as string);
+    thisScenario['testId'] = formattedResponse['data']['test_id'];
+    thisScenario['url'] = await getLTTestUrl(thisScenario['testId']);
+    // Set test as failed in LT
+    const testResultStatus = {
+      action: 'setTestStatus',
+      arguments: { status: result.status.toLowerCase() }
+    };
+    await this.page.evaluate(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (_) => {
+        //
+      },
+      `lambdatest_action: ${JSON.stringify(testResultStatus)}`
+    );
+  }
   scenariosLog.push(thisScenario);
   jsonReport['scenarios'] = scenariosLog;
   // reset variables
@@ -227,14 +280,16 @@ After(async function (
   await this.page?.close();
   await this.context?.close();
   if (config.browser === 'LT') {
-    await browser.close();
+    await browser?.close();
+  }
+  if (result.status === 'FAILED') {
+    failedScenariosCount++;
   }
 });
 
 AfterAll(async function () {
-  // generatePipelineReport(scenariosLog, testRunId);
-  // generateMsTeamsStepsAndSaveToFile(scenariosLog);
-  jsonReport['url'] = getLTBuildUrl(jsonReport['buildId']);
+  jsonReport['url'] = await getLTBuildUrl(jsonReport['buildId']);
+  jsonReport['status'] = failedScenariosCount > 0 ? 'FAILED' : 'PASSED';
 
   // Save report
   const jsonStepsFilename = `temp/${testRunId}/report.json`;
