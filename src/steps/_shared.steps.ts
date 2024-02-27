@@ -1,12 +1,4 @@
 /* eslint-disable no-console */
-import { ICustomWorld } from '../support/custom-world';
-import {
-  downloadFromUrl,
-  generateUniqueEmail,
-  getFakerValue,
-  getLastMail,
-  nthToNumber
-} from '../utils/Logic';
 import { Given, Then, When } from '@cucumber/cucumber';
 import { Page, expect } from '@playwright/test';
 import { Context } from 'vm';

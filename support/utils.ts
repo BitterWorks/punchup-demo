@@ -4,6 +4,7 @@
 
 import { CustomWorld, ICustomWorld } from './custom-world';
 import { config } from './config';
+import { IScreenshotOptions } from './Types';
 
 import { faker } from '@faker-js/faker/locale/en_US';
 import resemble from 'resemblejs';
@@ -13,12 +14,6 @@ import { ensureFile, pathExists } from 'fs-extra';
 import { writeFileSync, readFileSync, createWriteStream, unlink, existsSync, mkdirSync } from 'fs';
 import { dirname, join } from 'path';
 import https from 'https';
-
-type IScreenshotOptions = {
-  threshold?: number | undefined;
-  maxPixelDiff?: number | undefined;
-  reverse?: boolean;
-};
 
 const DEFAULT_SCREENSHOT_OPTIONS = {
   threshold: 0.05,

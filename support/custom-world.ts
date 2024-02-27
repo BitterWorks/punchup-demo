@@ -1,5 +1,6 @@
 import { compareToBaseImage, elementSelectorToFileName } from './utils';
-import { IScreenshotOptions } from '../utils/Types';
+import { IScreenshotOptions } from './Types';
+
 import { APIRequestContext, BrowserContext, Page, PlaywrightTestOptions } from '@playwright/test';
 import * as messages from '@cucumber/messages';
 import { IWorldOptions, World, setWorldConstructor } from '@cucumber/cucumber';
