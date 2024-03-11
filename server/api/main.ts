@@ -1,4 +1,4 @@
-import { generateTeamsMsgBodyFromReport, logger, msTeamsMsg, readJsonFile } from './utils';
+import { logger, readJsonFile } from './utils';
 import { HEALTHCHECK_WEBHOOK } from './conts';
 import express, { NextFunction, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -38,51 +38,6 @@ app.post('/', (req: Request, res: Response) => {
   res.json({ message: 'Received POST request!', body });
 });
 
-// app.post('/cron', (req: Request, res: Response) => {
-//   const testRunId = uuidv4();
-//   const { body } = req;
-//   logger.info(body);
-//   logger.info(testRunId);
-//   const paramsString = Object.entries(body)
-//     .map(([key, value]) => `${key}="${value}"`)
-//     .join(' ');
-//   logger.info(paramsString);
-//   const command = `RUN_ID=${testRunId} npm run test:stg features/auth/login.feature:6`;
-//   logger.info(command);
-//   exec(command, (error, stdout) => {
-//     logger.info('COMMAND NPM RUN CRON:STG');
-//     // logger.info(req);
-//     logger.info('----STDOUT----');
-//     logger.info(stdout);
-
-//     // Find messages between []
-//     const match: RegExpMatchArray | null = stdout.match(/\[\[(.*?)\]\]/);
-//     let msg = '';
-//     if (match) {
-//       msg = match[1];
-//     }
-//     logger.info('MSG -------- ', msg);
-//     if (error) {
-//       if (msg === '') {
-//         logger.log('Sending MS Teams alert----------');
-//         msTeamsMsg({
-//           summary: 'Cron job failed',
-//           text: 'Test run failed',
-//           webhookUri: CRONJOB_WEBHOOK
-//         });
-//       }
-//       logger.error('ERROR -------- ', error);
-//       return res.status(503).json({ error: msg || 'Test run failed' });
-//     }
-//     msTeamsMsg({
-//       summary: 'Healthcheck results',
-//       text: 'All tests passed',
-//       webhookUri: CRONJOB_WEBHOOK
-//     });
-//     res.status(200).send('Message sent');
-//   });
-// });
-
 type ScenarioType = {
   status: string;
   name: string;
@@ -99,7 +54,7 @@ type JsonReportType = {
   scenarios: ScenarioType[];
 };
 
-app.post('/healthcheck', (req: Request, res: Response) => {
+app.post('/smoke', (req: Request, res: Response) => {
   const { body } = req;
   logger.info(body);
   const testRunId = uuidv4();
@@ -111,9 +66,9 @@ app.post('/healthcheck', (req: Request, res: Response) => {
     const jsonReport: JsonReportType = readJsonFile(`temp/${testRunId}/report.json`);
     const body = generateTeamsMsgBodyFromReport(jsonReport);
     logger.info(body);
-    msTeamsMsg(HEALTHCHECK_WEBHOOK, body);
+
     res.status(200).send('Message sent');
   });
 });
 
-app.listen(3005, () => logger.info('Server ready'));
+app.listen(3006, () => logger.info('Server ready'));

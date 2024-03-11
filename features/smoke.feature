@@ -21,7 +21,7 @@ Feature: Smoke Suite
         And I go to the "Sign In" link of the "Sign In to Punchup" email sent to the email saved as "signup-email"
         Then I am at the 'Personal' feed
 
-    Scenario: Create a post
+    Scenario: Create a text-only post
         When I go to the '/' page
         And I click on 'Sign in / Register'
         And I input 'jorge@0fxrlxug.mailosaur.net' under 'Email'
@@ -32,4 +32,5 @@ Feature: Smoke Suite
         And I click on "Post"
         And I input 'This is my post' under 'Title'
         And I click on 'Publish'
+        And pause
         Then I see a toast message saying "You published a post to..."

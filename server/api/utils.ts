@@ -123,35 +123,3 @@ export function readJsonFile(filename) {
 
   return data;
 }
-
-export function generateTeamsMsgBodyFromReport(report) {
-  let summary = 'Tests passed';
-  const body: { type: string; text: string }[] = []; // Explicitly define the type
-
-  // Check if any scenario failed
-  if (report.status !== 'PASSED') {
-    summary = 'Tests failed';
-  }
-
-  // Iterate through scenarios
-  for (const scenario of report.scenarios) {
-    // Determine emoji and status text based on scenario status
-    let emoji = '✅';
-    let statusText = '**PASSED**';
-    if (scenario.status !== 'PASSED') {
-      emoji = '❌';
-      statusText = '**FAILED**';
-    }
-
-    // Construct text for the scenario
-    const scenarioText = `${emoji} ${statusText} [${scenario.name}](${scenario.url})`;
-
-    // Push TextBlock object to the body array
-    body.push({
-      type: 'TextBlock',
-      text: scenarioText
-    });
-  }
-
-  return { summary, body };
-}

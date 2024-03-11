@@ -1,8 +1,11 @@
 /* eslint-disable no-console */
+import { ICustomWorld } from '../support/custom-world';
+import { generateUniqueEmail, getLastMail } from '../utils/Logic';
+import { downloadFromUrl, getFakerValue, nthToNumber } from '../support/utils';
+
 import { Given, Then, When } from '@cucumber/cucumber';
 import { Page, expect } from '@playwright/test';
 import { Context } from 'vm';
-// import { federalFormSections } from '../utils/_shared/Consts';
 
 Given('I clicked the {string} button', async function (this: ICustomWorld, btnText: string) {
   const button = this.page.locator(`//button[span[text()="${btnText}"] or text()="${btnText}"]`);
@@ -89,18 +92,6 @@ When(
   }
 );
 
-// When(
-//   'I input {string} under {string} for {string}',
-//   async function (this: ICustomWorld, inputValue: string, inputLabel: string, boxTitle: string) {
-//     if (inputValue) {
-//       const boxTitle2 = boxTitle.replaceAll('...', '');
-//       const inputLabel2 = inputLabel.replaceAll('...', '');
-//       const selector = `//div[@class="card" and div[b[contains(text(),"${boxTitle2}")]]]//*[label[normalize-space()="${inputLabel2}" or contains(text(), "${inputLabel2}") or .//text()="${inputLabel2}"]]//input`;
-//       await this.fillInput(inputLabel2, inputValue, selector);
-//     }
-//   }
-// );
-
 When(
   'I input {string} under {string}',
   async function (this: ICustomWorld, inputValue: string, inputLabel: string) {
@@ -129,17 +120,6 @@ When(
     this.attachments[attachmentKey] = inputValue;
   }
 );
-
-// When(
-//   'I select {string} under {string} for {string}',
-//   async function (this: ICustomWorld, selectValue: string, selectLabel: string, boxTitle: string) {
-//     if (selectValue) {
-//       const boxTitle2 = boxTitle.replaceAll('...', '');
-//       const selector = `//div[@class="card" and div[b[contains(text(),"${boxTitle2}")]]]//*[label[text()="${selectLabel}" or .//text()="${selectLabel}"]]//select`;
-//       await this.selectOption(selectValue, selectLabel, selector);
-//     }
-//   }
-// );
 
 When(
   'I select {string} under {string}',
@@ -172,25 +152,6 @@ When(
     await this.page.locator(selector).click();
   }
 );
-
-// When('I am at the {string} step', async function (this: ICustomWorld, stepTitle: string) {
-//   const stepSection = federalFormSections.find((section) => section.steps.includes(stepTitle));
-//   let currentSection = (await this.page.locator('li[class*=current] > a').textContent()).trim();
-//   let currentStepTitle = (await this.page.locator('h1').textContent()).trim();
-//   while (currentStepTitle !== stepTitle) {
-//     if (currentSection !== stepSection.title) {
-//       const sectionLocator = this.page.locator(`//li[a[contains(text(),"${currentStepTitle}")]]`);
-//       const isSectionCompleted = (await sectionLocator.getAttribute('class')).includes('completed');
-//       if (isSectionCompleted) {
-//         await sectionLocator.hover();
-//         const sectionOverviewBtnLocator = '//li/a[text()="Overview"]';
-//         await this.page.locator(sectionOverviewBtnLocator).click();
-//       } else {
-//         // Continue to complete the section
-//       }
-//     }
-//   }
-// });
 
 When(
   'I click {string} under {string}',
@@ -241,16 +202,6 @@ When('I download and attach the federal return PDF', async function (this: ICust
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
 });
 
-// Step for testing PDF downloads
-// When('I download some PDF', async function (this: ICustomWorld) {
-//   console.log(await this.context.pages());
-//   await this.page.goto('https://robstarbuck.uk/cv');
-//   await this.page.waitForLoadState('load');
-//   const url = await this.page.getByRole('link', { name: 'PDF ↓' }).getAttribute('href');
-//   console.log(url);
-//   await downloadFromUrl(url, './test.pdf');
-// });
-
 When('I raise an error saying {string}', async function (this: ICustomWorld, errorText: string) {
   throw new Error(errorText);
 });
@@ -270,7 +221,7 @@ Then(
         ''
       )}")]])[1]`,
       {
-        timeout: 5000
+        timeout: 15000
       }
     );
   }

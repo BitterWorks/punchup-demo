@@ -30,7 +30,7 @@ export interface ICustomWorld extends World {
     options?: IScreenshotOptions
   ): Promise<void>;
   getWorkingSelector(selectors: string[], timeout?: number): Promise<string>;
-  fillInput(inputLabel: string, inputValue: string, selector: string | null): Promise<void>;
+  fillInput(inputLabel: string, inputValue: string): Promise<void>;
   selectOption(selectValue: string, selectLabel: string, selector: string | null): Promise<void>;
   pickOption(pickValue: string, labelText: string): Promise<void>;
 }
@@ -50,7 +50,7 @@ export class CustomWorld extends World implements ICustomWorld {
     // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
     await this.page.evaluate(
       // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars, prettier/prettier
-      (_) => { },
+      (_) => {},
       // eslint-disable-next-line indent
       `lambdatest_action: ${JSON.stringify({
         action: 'setTestStatus',
@@ -87,21 +87,10 @@ export class CustomWorld extends World implements ICustomWorld {
     throw new Error("Couldn't find working selector");
   }
 
-  async fillInput(inputLabel: string, inputValue: string, selector: string | null = null) {
-    const finalSelector =
-      selector ??
-      `//*[label[normalize-space()="${inputLabel}" or contains(text(), "${inputLabel}") or .//text()="${inputLabel}"]]//input`;
-    const dashInsensitiveInputs = ['Username', 'Password'];
-    // If label in `dashSensitiveInputs`, will ignore dashes.
-    const inputIsDashInsensitive = dashInsensitiveInputs.find((dsi) => dsi.includes(inputLabel));
-    const values = inputIsDashInsensitive ? [inputValue] : inputValue.split('-');
-    for (let index = 0; index < values.length; index++) {
-      const locator = this.page.locator(finalSelector).nth(index);
-      await locator.focus();
-      while ((await locator.inputValue()) !== values[index]) {
-        await locator.fill(values[index]);
-      }
-    }
+  async fillInput(inputLabel: string, inputValue: string) {
+    const locator = this.page.locator(`//input[@placeholder="${inputLabel}"]`);
+    await locator.focus();
+    await locator.fill(inputValue);
   }
 
   async selectOption(selectValue: string, selectLabel: string, selector: string | null = null) {

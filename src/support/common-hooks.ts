@@ -173,7 +173,7 @@ Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
     // Get LambdaTest test ID
     const rawResponse = await this.page.evaluate(
       // eslint-disable-next-line @typescript-eslint/no-empty-function, prettier/prettier, @typescript-eslint/no-unused-vars
-      (_) => { },
+      (_) => {},
       // eslint-disable-next-line prettier/prettier
       `lambdatest_action: ${JSON.stringify({ action: 'getTestDetails' })}`
     );
@@ -251,7 +251,7 @@ After(async function (
     // Get LambdaTest testId and recording url
     const rawResponse = await this.page.evaluate(
       // eslint-disable-next-line @typescript-eslint/no-empty-function, prettier/prettier, @typescript-eslint/no-unused-vars
-      (_) => { },
+      (_) => {},
       // eslint-disable-next-line prettier/prettier
       `lambdatest_action: ${JSON.stringify({ action: 'getTestDetails' })}`
     );
