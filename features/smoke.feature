@@ -2,8 +2,10 @@ Feature: Smoke Suite
 
     Set of tests with happiest of happy paths for all core features
 
+    Background:
+        Given I go to the '/' page
+    
     Scenario: Valid login w/ exiting email using Magic Link
-        When I go to the '/' page
         And I click on 'Sign in / Register'
         And I input 'jorge@0fxrlxug.mailosaur.net' under 'Email'
         And I click on 'Get Magic Link'
@@ -12,7 +14,6 @@ Feature: Smoke Suite
         Then I am at the 'Personal' feed
 
     Scenario: Valid signup w/ Magic Link
-        When I go to the '/' page
         And I click on 'Sign in / Register'
         And I input a valid 'email' under 'Email'
         And I save the value for the 'Email' input as 'signup-email'
@@ -22,7 +23,6 @@ Feature: Smoke Suite
         Then I am at the 'Personal' feed
 
     Scenario: Create a text-only post
-        When I go to the '/' page
         And I click on 'Sign in / Register'
         And I input 'jorge@0fxrlxug.mailosaur.net' under 'Email'
         And I click on 'Get Magic Link'
@@ -34,3 +34,14 @@ Feature: Smoke Suite
         And I click on 'Publish'
         And pause
         Then I see a toast message saying "You published a post to..."
+
+    Scenario: Open and close Search bar
+        When I click on the 'lens' icon
+        When I click on the 'x' icon
+        Then I no longer see the search bar
+
+    Scenario: Validate the appearance of the Privacy and Policy
+        When I click on the three-dot-option button
+        When I click on 'Privacy & Terms'
+        When I click on 'Privacy Policy'
+        Then I verify the 'center' section appearance

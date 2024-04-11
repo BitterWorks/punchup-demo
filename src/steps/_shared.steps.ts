@@ -64,10 +64,12 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
     [
       `//a[text()="${btnText}"]`,
       `(//button[normalize-space()="${btnText}"])[1]`,
-      `//button[.//text()="${btnText}"]`
+      `//button[.//text()="${btnText}"]`,
       // `//input[@value="${btnText}"]`,
       // `//button[text()="${btnText}"]`,
-      // `//a[contains(normalize-space(),"${btnText}")]`
+      // `//a[contains(normalize-space(),"${btnText}")]`,
+      `//a[normalize-space(text())="${btnText}"]`,
+      `//div[text()="${btnText}"]`
     ].join(' | ') +
     ')';
   const locator = this.page.locator(selector);
@@ -353,3 +355,43 @@ Then(
     await expect(locator).toBeVisible();
   }
 );
+
+When('I click on the {string} icon', async function (this: ICustomWorld, iconName: string) {
+  const icons = {
+    lens: 'M229.7,218.3l-43.3-43.2a92.2,92.2,0,1,0-11.3,11.3l43.2,43.3a8.2,8.2,0,0,0,11.4,0A8.1,8.1,0,0,0,229.7,218.3ZM40,116a76,76,0,1,1,76,76A76.1,76.1,0,0,1,40,116Z',
+    home: 'M208,224H160a16,16,0,0,1-16-16V160H112v48a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.5a16,16,0,0,1,5.2-11.8l80-72.7a16,16,0,0,1,21.6,0l80,72.7a16,16,0,0,1,5.2,11.8V208a16,16,0,0,1-16,16Zm-96-80h32a16,16,0,0,1,16,16v48h48V115.5L128,42.8,48,115.5V208H96V160A16,16,0,0,1,112,144Z',
+    communities:
+      'M121.2,157.9a60,60,0,1,0-66.4,0A95.5,95.5,0,0,0,9.5,192.8a8,8,0,1,0,13,9.2,80.1,80.1,0,0,1,131,0,8,8,0,1,0,13-9.2A95.5,95.5,0,0,0,121.2,157.9ZM44,108a44,44,0,1,1,44,44A44,44,0,0,1,44,108Zm202.1,95.9A7.9,7.9,0,0,1,235,202a80.2,80.2,0,0,0-65.5-34,8,8,0,0,1,0-16,44,44,0,0,0,0-88,47.4,47.4,0,0,0-11.9,1.6,8,8,0,0,1-9.9-5.5,8.1,8.1,0,0,1,5.5-9.9A64,64,0,0,1,169.5,48a59.9,59.9,0,0,1,33.2,109.9,96.3,96.3,0,0,1,45.4,34.9A8,8,0,0,1,246.1,203.9Z',
+    conversations:
+      'M169.6,72.6A80,80,0,0,0,16,104v66a14,14,0,0,0,14,14H86.7A80.2,80.2,0,0,0,160,232h66a14,14,0,0,0,14-14V152A79.8,79.8,0,0,0,169.6,72.6ZM32,104a64,64,0,1,1,64,64H32ZM224,216H160a64.2,64.2,0,0,1-55.7-32.4A80.2,80.2,0,0,0,176,104a83.6,83.6,0,0,0-1.3-14.3A64,64,0,0,1,224,152Z',
+    x: 'M205.7,194.3a8.1,8.1,0,0,1,0,11.4,8.2,8.2,0,0,1-11.4,0L128,139.3,61.7,205.7a8.2,8.2,0,0,1-11.4,0,8.1,8.1,0,0,1,0-11.4L116.7,128,50.3,61.7A8.1,8.1,0,0,1,61.7,50.3L128,116.7l66.3-66.4a8.1,8.1,0,0,1,11.4,11.4L139.3,128Z',
+    menu: 'M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z',
+    document:
+      'M213.7,66.3l-40-40A8.1,8.1,0,0,0,168,24H88A16,16,0,0,0,72,40V56H56A16,16,0,0,0,40,72V216a16,16,0,0,0,16,16H168a16,16,0,0,0,16-16V200h16a16,16,0,0,0,16-16V72A8.1,8.1,0,0,0,213.7,66.3ZM168,216H56V72h76.7L168,107.3V216Zm32-32H184V104a8.1,8.1,0,0,0-2.3-5.7l-40-40A8.1,8.1,0,0,0,136,56H88V40h76.7L200,75.3Zm-56-32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,152Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,184Z'
+  };
+  console.log(icons[iconName]);
+  const selector = `//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"]`;
+  await this.page.locator(selector).click();
+});
+
+Then('I no longer see the search bar', async function (this: ICustomWorld) {
+  const selector = `//div[div[input[@name="search"]]]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible({ visible: false });
+});
+
+Then(
+  'I verify the {string} section appearance',
+  async function (this: ICustomWorld, sectionName: string) {
+    const sectionToSelectors = {
+      center: `//div[@slot="center"]`
+    };
+    const selector = sectionToSelectors[sectionName];
+    await this.validateElementAppeareance(selector, ['//p[contains(text(), "Last")]']);
+  }
+);
+
+When('I click on the three-dot-option button', async function (this: ICustomWorld) {
+  const selector = `//button[@id="headlessui-popover-button-1"]`;
+  await this.page.locator(selector).click();
+});

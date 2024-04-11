@@ -71,7 +71,7 @@ export class CustomWorld extends World implements ICustomWorld {
     const mask = maskSelectors.map((selector) => this.page.locator(selector));
     const screenshot = await this.page
       .locator(selector)
-      .screenshot({ timeout: 5000, path: `temp/${this.testRunId}/{path}`, mask });
+      .screenshot({ timeout: 5000, path: `temp/${this.testRunId}/${path}`, mask });
     await compareToBaseImage(this, path, screenshot, options);
   }
 
