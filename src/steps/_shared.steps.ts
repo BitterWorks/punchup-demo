@@ -59,7 +59,7 @@ When(
 );
 
 When('I click on {string}', async function (this: ICustomWorld, btnText: string) {
-  const selector =
+  let selector =
     '(' +
     [
       `//a[text()="${btnText}"]`,
@@ -69,9 +69,15 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
       // `//button[text()="${btnText}"]`,
       // `//a[contains(normalize-space(),"${btnText}")]`,
       `//a[normalize-space(text())="${btnText}"]`,
-      `//div[text()="${btnText}"]`
+      `//div[text()="${btnText}"]`,
+      `//a[div[text()="${btnText}"]]`
     ].join(' | ') +
     ')';
+  if (btnText === 'New Movies') {
+    selector += '[1]';
+  }
+  console.log(selector);
+  await this.page.pause();
   const locator = this.page.locator(selector);
   if (btnText === 'Close') {
     await locator.nth(1).click();
@@ -308,7 +314,7 @@ Then('I am at the {string} feed', async function (this: ICustomWorld, titleText:
 Then(
   'I wait for {string} to receive a {string} email',
   async function (this: ICustomWorld, recipientEmail: string, emailSubject: string) {
-    await this.page.waitForTimeout(3000);
+    await this.page.waitForTimeout(20000);
     await getLastMail({
       subject: emailSubject,
       sentTo: recipientEmail,
@@ -394,4 +400,10 @@ Then(
 When('I click on the three-dot-option button', async function (this: ICustomWorld) {
   const selector = `//button[@id="headlessui-popover-button-1"]`;
   await this.page.locator(selector).click();
+});
+
+Then('I see the {string} title', async function (this: ICustomWorld, titleText: string) {
+  const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
 });
