@@ -403,7 +403,13 @@ When('I click on the three-dot-option button', async function (this: ICustomWorl
 });
 
 Then('I see the {string} title', async function (this: ICustomWorld, titleText: string) {
-  const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1]`;
+  const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1] | //div[text()="${titleText}" and contains(@class, "text-4xl")]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
+});
+
+Then('I see a total of {string} Feeds', async function (this: ICustomWorld, titleText: string) {
+  const selector = `//div[contains(text(), '${titleText}')]`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();
 });

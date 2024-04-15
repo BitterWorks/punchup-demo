@@ -53,3 +53,5 @@ Feature: Smoke Suite
         When I click on 'Discover Feeds'
         When I click on 'New Movies'
         Then I see the 'New Movies' title
+
+    
