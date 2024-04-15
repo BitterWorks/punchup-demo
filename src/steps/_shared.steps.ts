@@ -69,8 +69,9 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
       // `//button[text()="${btnText}"]`,
       // `//a[contains(normalize-space(),"${btnText}")]`,
       `//a[normalize-space(text())="${btnText}"]`,
-      `//div[text()="${btnText}"]`,
-      `//a[div[text()="${btnText}"]]`
+      // `//div[text()="${btnText}"]`,
+      `//a[div[text()="${btnText}"]]`,
+      `(//button[text()='${btnText}'])[2]`
     ].join(' | ') +
     ')';
   if (btnText === 'New Movies') {
@@ -412,4 +413,8 @@ Then('I see a total of {string} Feeds', async function (this: ICustomWorld, titl
   const selector = `//div[contains(text(), '${titleText}')]`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();
+});
+
+When('go back', async function (this: ICustomWorld) {
+  await this.page.goBack();
 });

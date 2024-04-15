@@ -12,8 +12,8 @@ Feature: Discover Feeds
     Scenario: Accessing Feeds
         When I click on the three-dot-option button
         And I click on 'Discover Feeds'
-        And pause
-        Then I see the 'Public Feeds' title
+        And I click on 'Personal'
+        Then I see the 'Personal' title
 
     Scenario: Checking the amount of Feeds
         When I click on the three-dot-option button
@@ -24,6 +24,11 @@ Feature: Discover Feeds
         When I click on the three-dot-option button
         And I click on 'Discover Feeds'
         And pause
+        And I click on 'Personal'
+        And pause
+        And go back
         And I click on 'New Movies'
         And pause
-        And I click on ''
+        And I click on 'Subscribe'
+        And pause
+        
