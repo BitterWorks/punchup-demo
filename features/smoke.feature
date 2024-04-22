@@ -43,15 +43,20 @@ Feature: Smoke Suite
         Then I no longer see the search bar
 
     Scenario: Validate the appearance of the Privacy and Policy
-        When I click on the three-dot-option button
+        When I click on the hamburger menu button
         When I click on 'Privacy & Terms'
         When I click on 'Privacy Policy'
         Then I verify the 'center' section appearance
 
     Scenario: Access the New Movies Feed
-        When I click on the three-dot-option button
+        When I click on the hamburger menu button
         When I click on 'Discover Feeds'
         When I click on 'New Movies'
         Then I see the 'New Movies' title
 
-    
+    Scenario: Validate the appearance of the dark mode home page
+        When I click on the hamburger menu button
+        And pause
+        And I click on 'Switch to Dark Mode'
+        Then I verify the 'body' section appearance
+        And pause

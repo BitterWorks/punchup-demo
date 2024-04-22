@@ -178,7 +178,10 @@ export async function compareToBaseImage(
   }
   const img1 = PNG.sync.read(screenshot);
   const { diff, pixelDiff } = getDifference(img1, baseImage, { threshold });
-  if (diff && pixelDiff > maxPixelDiff) {
+  console.log(diff);
+  console.log(pixelDiff);
+  console.log(maxPixelDiff);
+  if (diff && ((!maxPixelDiff && pixelDiff > 0) || (pixelDiff && pixelDiff > maxPixelDiff))) {
     await customWorld.attach(diff, 'image/png;base64');
     if (!reverse) {
       throw new Error(`Screenshot does not match : ${baseImagePath} \n DIFF: ${pixelDiff} pixels`);

@@ -10,25 +10,37 @@ Feature: Discover Feeds
         Then I am at the 'Personal' feed
 
     Scenario: Accessing Feeds
-        When I click on the three-dot-option button
+        When I click on the hamburger menu button
         And I click on 'Discover Feeds'
         And I click on 'Personal'
         Then I see the 'Personal' title
 
     Scenario: Checking the amount of Feeds
-        When I click on the three-dot-option button
+        When I click on the hamburger menu button
         And I click on 'Discover Feeds'
-        Then I see a total of 'got' Feeds
+        And pause
+        Then I verify the number of feeds displayed is correct
     
     Scenario: Subscribing to the Feed
-        When I click on the three-dot-option button
+        When I click on the hamburger menu button
         And I click on 'Discover Feeds'
         And pause
         And I click on 'Personal'
         And pause
         And go back
+        And pause
+        And refresh
+        And pause
+        And I click on 'Personal'
+        And go back
+        And I click on 'Personal'
+        And go back
         And I click on 'New Movies'
         And pause
         And I click on 'Subscribe'
         And pause
-        
+        And I click on 'Done'
+
+# Scenario: Clicking the hamburger menu button
+    #     When I click on the 'menu' icon
+    #     And pause

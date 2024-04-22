@@ -71,7 +71,10 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
       `//a[normalize-space(text())="${btnText}"]`,
       // `//div[text()="${btnText}"]`,
       `//a[div[text()="${btnText}"]]`,
-      `(//button[text()='${btnText}'])[2]`
+      `(//button[text()='${btnText}'])[2]`,
+      `//button[span[contains(text(), '${btnText}')]]`,
+      `//a[span[span[span[text()="${btnText}"]]]]`
+      // `//a[.//span[text()="${btnText}"]]`
     ].join(' | ') +
     ')';
   if (btnText === 'New Movies') {
@@ -391,30 +394,69 @@ Then(
   'I verify the {string} section appearance',
   async function (this: ICustomWorld, sectionName: string) {
     const sectionToSelectors = {
-      center: `//div[@slot="center"]`
+      center: {
+        selector: `//div[@slot="center"]`,
+        masks: ['//p[contains(text(), "Last")]']
+      },
+      body: {
+        selector: `//body`,
+        masks: [
+          `//feed | //div[@class = "flex w-full max-w-5xl flex-col gap-10"] | //div[@class="flex grow flex-row gap-8"]`
+        ]
+      }
     };
-    const selector = sectionToSelectors[sectionName];
-    await this.validateElementAppeareance(selector, ['//p[contains(text(), "Last")]']);
+    const selector = sectionToSelectors[sectionName]['selector'];
+    //turn mask array into object if it becomes problematic
+    await this.validateElementAppeareance(selector);
   }
 );
 
-When('I click on the three-dot-option button', async function (this: ICustomWorld) {
+When('I click on the hamburger menu button', async function (this: ICustomWorld) {
   const selector = `//button[@id="headlessui-popover-button-1"]`;
   await this.page.locator(selector).click();
 });
 
 Then('I see the {string} title', async function (this: ICustomWorld, titleText: string) {
-  const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1] | //div[text()="${titleText}" and contains(@class, "text-4xl")]`;
+  const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1] | //div[text()="${titleText}" and contains(@class, "text-4xl")] | //span[text()='${titleText}'] | (//div[@class="text-3xl font-bold" and text()="${titleText}"])[1]`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();
 });
 
-Then('I see a total of {string} Feeds', async function (this: ICustomWorld, titleText: string) {
-  const selector = `//div[contains(text(), '${titleText}')]`;
-  const locator = await this.page.locator(selector);
-  await expect(locator).toBeVisible();
+Then('I verify the number of feeds displayed is correct', async function (this: ICustomWorld) {
+  const selector = `//div[contains(text(), 'We’ve')]`;
+  const cardCount = await this.page
+    .locator(
+      `//div[@class="grid max-w-screen-2xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"]/a`
+    )
+    .count();
+  const locator = this.page.locator(selector);
+  const feedCount = await locator.textContent();
+  //extract the number from feedCount and make sure it's 1
+  // Extract the number (assuming it's always an integer)
+  const extractedNumber = parseInt(feedCount.match(/\d+/)[0], 10);
+  console.log(`Extracted number: ${extractedNumber}`);
+  console.log(`Number of cards: ${cardCount}`);
+  console.log(`${cardCount} === ${extractedNumber}`);
+  await this.page.pause();
+  const countsMatch = cardCount === extractedNumber;
+  expect(countsMatch).toBeTruthy();
 });
 
 When('go back', async function (this: ICustomWorld) {
   await this.page.goBack();
+});
+
+When('refresh', async function (this: ICustomWorld) {
+  await this.page.reload();
+});
+
+Then('I see the {string} pop-up menu', async function (this: ICustomWorld, popupText: string) {
+  const selector = `//div[@slot="panel"][div[text()="${popupText}"]]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
+});
+
+When('I click the PUNCHUP logo', async function (this: ICustomWorld) {
+  const selector = `//a[@href="/"][*[name()='svg' and @id="logo"]]`;
+  await this.page.locator(selector).click();
 });
