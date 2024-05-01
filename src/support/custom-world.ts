@@ -23,7 +23,7 @@ export interface ICustomWorld extends World {
   // Testing utils
   username?: string;
 
-  validateElementAppeareance(
+  validateElementAppearance(
     selector: string,
     maskSelectors?: string[],
     screenshotName?: string,
@@ -59,7 +59,7 @@ export class CustomWorld extends World implements ICustomWorld {
     );
   }
 
-  async validateElementAppeareance(
+  async validateElementAppearance(
     selector: string,
     maskSelectors: string[] = [],
     screenshotName: string | undefined = undefined,

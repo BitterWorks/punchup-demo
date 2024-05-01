@@ -115,6 +115,10 @@ When(
           // Type the current character
           await this.page.keyboard.type(inputValue[i]);
         }
+      } else if (inputLabel === 'Search') {
+        await this.page!.locator(`//input[@placeholder="${inputLabel}"]`).fill(`${inputValue}`);
+      } else if (inputLabel === 'Message Hero') {
+        await this.page!.locator(`//input[@placeholder="${inputLabel}"]`).fill(`${inputValue}`);
       } else {
         const inputLabel2 = inputLabel.replaceAll('...', '');
         await this.fillInput(inputLabel2, inputValue);
@@ -407,7 +411,7 @@ Then(
     };
     const selector = sectionToSelectors[sectionName]['selector'];
     //turn mask array into object if it becomes problematic
-    await this.validateElementAppeareance(selector);
+    await this.validateElementAppearance(selector);
   }
 );
 
@@ -460,3 +464,220 @@ When('I click the PUNCHUP logo', async function (this: ICustomWorld) {
   const selector = `//a[@href="/"][*[name()='svg' and @id="logo"]]`;
   await this.page.locator(selector).click();
 });
+
+// When(
+//   `I input {string} under {string}`,
+//   async function (this: ICustomWorld, inputValue: string, placeholderText: string) {
+//     // await this.page!.locator(`//*[@placeholder="${placeholderText}"]`).fill(`${inputValue}`);
+//     await this.page!.locator(`//input[@placeholder="${placeholderText}"]`).fill(`${inputValue}`);
+//   }
+// );
+
+Then('I see the {string} user result', async function (this: ICustomWorld, userText: string) {
+  const selector = `//span[text()="${userText}"]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
+});
+
+When('I click the {string} user result', async function (this: ICustomWorld, searchResult: string) {
+  const selector = `//a[div[span[text()="${searchResult}"]]]`;
+  await this.page.locator(selector).click();
+});
+
+// Then('I see the {string} user profile', async function (this: ICustomWorld, searchText: string) {
+//   const textInUsername = `//div[@class="text-xl font-bold dark:text-onyx-100"]`;
+//   const textInNickname = `//div[@class="dark:text-onyx-300"]`;
+//   const usernameText = await this.page
+//     .locator(`//div[@class="text-xl font-bold dark:text-onyx-100"]`)
+//     .textContent();
+//   const nicknameText = await this.page.locator(`//div[@class="dark:text-onyx-300"]`).textContent();
+//   const textContained = textInUsername || textInNickname;
+//   expect(textContained);
+// });
+
+Then('I see the {string} user profile', async function (this: ICustomWorld, searchText: string) {
+  const usernameSelector = `//div[@class="text-xl font-bold dark:text-onyx-100"]`;
+  const nicknameSelector = `//div[@class="dark:text-onyx-300"]`;
+
+  // Get the text content of the elements
+  const usernameText = await this.page.locator(usernameSelector).textContent();
+  const nicknameText = await this.page.locator(nicknameSelector).textContent();
+
+  // Check if either of the text content contains the search text
+  const textContained = usernameText.includes(searchText) || nicknameText.includes(searchText);
+  expect(textContained).toBe(true);
+});
+
+When('I press {string}', async function (this: ICustomWorld, key: string) {
+  await this.page.keyboard.down(`${key}`);
+});
+
+When(
+  'I save the current datetime as {string}',
+  async function (this: ICustomWorld, attachmentKey: string) {
+    const currentDate = new Date();
+    console.log(this.attachments);
+    this.attachments[attachmentKey] = currentDate.toISOString();
+    console.log(this.attachments);
+    console.log(currentDate);
+  }
+);
+
+Then(
+  'I see that the last message contains {string} and was sent after {string}',
+  async function (this: ICustomWorld, messageText: string, messageDateTime: string) {
+    // Retrieve the last message sent
+    const lastMessage = await this.page.waitForSelector(
+      '(//div[@class="group relative"])[1]/div/span/span[2] | (//div[@class="group relative"])[1]/div/span/span'
+    );
+
+    // Get the text content of the last message
+    const lastMessageText = await lastMessage.textContent();
+
+    // Check if the last message contains the specified text
+    expect(lastMessageText).toContain(messageText);
+
+    // Get the message sending time from attachments
+    const savedDateTimeString = this.attachments[messageDateTime];
+    const savedDateTime = new Date(savedDateTimeString);
+
+    // Get the sending time of the last message
+    const lastMessageTimestampString = await this.page
+      .locator(
+        `(//div[@class="group relative"])[1]/div/div/div | (//div[@class="group relative"])[1]/div/span/span/span[2]`
+      )
+      .textContent();
+
+    // const selectorOnlyMessage = `//div[@class="group relative"]//span[text()="jorge@0fxrlxug.mailosaur.net"]/following-sibling::span)[1]`;
+    // const selectorMessageWithNickname = `(//div[@class="group relative"]//span[@class="flex flex-row items-center gap-3"]/following-sibling::span)[1]`;
+
+    const lastMessageTimestampAndNameString = await this.page
+      .locator(
+        `(//div[@class="group relative"]//span[text()="jorge@0fxrlxug.mailosaur.net"]/following-sibling::span)[1]`
+      )
+      .textContent();
+
+    const lastMessageTimestampAndNameStringAMPM: 'AM' | 'PM' = lastMessageTimestampAndNameString
+      .split(' ')
+      .pop() as 'AM' | 'PM';
+
+    const timeOffset = 0;
+
+    const lastMessageTimestampDate = new Date();
+    const [hours, minutes] = lastMessageTimestampString.split(':');
+    console.log({ lastMessageTimestampDate });
+    if (lastMessageTimestampAndNameStringAMPM === 'PM') {
+      lastMessageTimestampDate.setHours(parseInt(hours + timeOffset), parseInt(minutes));
+    } else {
+      lastMessageTimestampDate.setHours(parseInt(hours), parseInt(minutes));
+    }
+    console.log({ lastMessageTimestampDate });
+
+    console.log({ lastMessageTimestampDate, savedDateTime });
+    // Assert that the last message was sent after the specified messageDateTime
+    expect(lastMessageTimestampDate.getTime()).toBeGreaterThan(savedDateTime.getTime());
+  }
+);
+
+Then(
+  'NEW I see that the last message contains {string} and was sent after {string}',
+  async function (this: ICustomWorld, user: string, messageText: string, messageDateTime: string) {
+    // Retrieve the last message sent
+    const lastMessage = await this.page.waitForSelector(
+      '(//div[@class="group relative"])[1]/div/span/span | (//div[@class="group relative"])[1]/div/span/span[2]'
+    );
+
+    // Get the text content of the last message
+    const lastMessageText = await lastMessage.textContent();
+
+    console.log(lastMessageText);
+
+    // Check if the last message contains the specified text
+    expect(lastMessageText).toContain(messageText);
+
+    // Get the message sending time from attachments
+    const savedDateTimeString = this.attachments[messageDateTime];
+    const savedDateTime = new Date(savedDateTimeString);
+
+    // Get the sending time of the last message
+    const lastMessageTimestampString = await this.page
+      .locator(`(//div[@class="group relative"])[1]/div/div/div`)
+      .textContent();
+
+    // const selectorOnlyMessage = `//div[@class="group relative"]//span[text()="jorge@0fxrlxug.mailosaur.net"]/following-sibling::span)[1]`;
+    // const selectorMessageWithNickname = `(//div[@class="group relative"]//span[@class="flex flex-row items-center gap-3"]/following-sibling::span)[1]`;
+
+    const lastMessageTimestampAndNameString = await this.page
+      .locator(
+        `(//div[@class="group relative"]//span[text()="${user}"]/following-sibling::span)[1]`
+      )
+      .textContent();
+
+    const lastMessageTimestampAndNameStringAMPM: 'AM' | 'PM' = lastMessageTimestampAndNameString
+      .split(' ')
+      .pop() as 'AM' | 'PM';
+
+    const timeOffset = 0;
+
+    const lastMessageTimestampDate = new Date();
+    const [hours, minutes] = lastMessageTimestampString.split(':');
+    console.log({ lastMessageTimestampDate });
+    if (lastMessageTimestampAndNameStringAMPM === 'PM') {
+      lastMessageTimestampDate.setHours(parseInt(hours + timeOffset), parseInt(minutes));
+    } else {
+      lastMessageTimestampDate.setHours(parseInt(hours), parseInt(minutes));
+    }
+    console.log({ lastMessageTimestampDate });
+
+    console.log({ lastMessageTimestampDate, savedDateTime });
+    // Assert that the last message was sent after the specified messageDateTime
+    expect(lastMessageTimestampDate.getTime()).toBeGreaterThan(savedDateTime.getTime());
+  }
+);
+
+When(
+  'I click on {string} user in the conversations menu',
+  async function (this: ICustomWorld, user: string) {
+    await this.page.locator(`//a[span[span[span[text()="${user}"]]]]`).click();
+  }
+);
+
+// Then(
+//   'I see that the last message contains {string} and was sent after {string}',
+//   async function (this: ICustomWorld, messageText: string, messageDateTime: string) {
+//     // Retrieve the last message sent
+//     const lastMessage = await this.page.waitForSelector(
+//       '(//div[@class="group relative"])[1]/div/span/span'
+//     );
+
+//     // Get the text content of the last message
+//     const lastMessageText = await lastMessage.textContent();
+
+//     console.log(lastMessage);
+
+//     // Check if the last message contains the specified text
+//     expect(lastMessageText).toContain(messageText);
+
+//     // Get the message sending time from attachments
+//     const savedDateTimeString = this.attachments[messageDateTime];
+//     const savedDateTime = new Date(savedDateTimeString);
+
+//     // Get the sending time of the last message
+//     const lastMessageTimestampString = await this.page
+//       .locator(`(//div[@class="group relative"])[1]/div/div/div`)
+//       .textContent();
+//     const lastMessageTimestamp = new Date(parseInt(lastMessageTimestampString));
+
+//     console.log(lastMessageTimestamp);
+
+//     // Assert that the last message was sent after the specified messageDateTime
+//     expect(lastMessageTimestamp.getTime()).toBeGreaterThan(savedDateTime.getTime());
+//   }
+// );
+
+// Then(
+//   'I see that the last message contains {string} and was sent after {string}',
+//   async function (this: ICustomWorld, messageText: string, messageDateTime: string) {
+//     const lastMessage =
+//   }
+// );
