@@ -389,13 +389,17 @@ When('I click on the {string} icon', async function (this: ICustomWorld, iconNam
     emoji:
       'M128,24a104,104,0,0,0,0,208,102.2,102.2,0,0,0,30.6-4.6,6.7,6.7,0,0,0,3.3-2l63.5-63.5a7.2,7.2,0,0,0,2-3.3A102.2,102.2,0,0,0,232,128,104.2,104.2,0,0,0,128,24Zm84.7,128L152,212.7A87.9,87.9,0,1,1,212.7,152ZM80,108a12,12,0,1,1,12,12A12,12,0,0,1,80,108Zm72,0a12,12,0,1,1,12,12A12,12,0,0,1,152,108Zm24.5,48a56,56,0,0,1-97,0,8,8,0,1,1,13.8-8,40.1,40.1,0,0,0,69.4,0,8,8,0,0,1,13.8,8Z',
     image:
-      'M232,184V56a16,16,0,0,0-16-16H40A16,16,0,0,0,24,56V168h0v32a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V184ZM216,56V164.7L187.3,136a16.1,16.1,0,0,0-22.6,0L144,156.7,99.3,112a16.1,16.1,0,0,0-22.6,0L40,148.7V56Zm0,144H40V171.3l48-48L132.7,168a15.9,15.9,0,0,0,22.6,0L176,147.3l40,40V200Zm-68.5-91.5A11.9,11.9,0,0,1,144,100a12,12,0,0,1,24,0h0a12,12,0,0,1-12,12A12.3,12.3,0,0,1,147.5,108.5Z'
+      'M232,184V56a16,16,0,0,0-16-16H40A16,16,0,0,0,24,56V168h0v32a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V184ZM216,56V164.7L187.3,136a16.1,16.1,0,0,0-22.6,0L144,156.7,99.3,112a16.1,16.1,0,0,0-22.6,0L40,148.7V56Zm0,144H40V171.3l48-48L132.7,168a15.9,15.9,0,0,0,22.6,0L176,147.3l40,40V200Zm-68.5-91.5A11.9,11.9,0,0,1,144,100a12,12,0,0,1,24,0h0a12,12,0,0,1-12,12A12.3,12.3,0,0,1,147.5,108.5Z',
+    threeDots:
+      'M76,128a12,12,0,1,1-12-12A12,12,0,0,1,76,128Zm116-12a12,12,0,1,0,12,12A12,12,0,0,0,192,116Zm-64,0a12,12,0,1,0,12,12A12,12,0,0,0,128,116Z'
   };
   console.log(icons[iconName]);
   if (icons[iconName] === icons['emoji']) {
     const selectorEmoji = `(//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"])[last()]`;
     await this.page.locator(selectorEmoji).click();
-    console.log(selectorEmoji);
+  } else if (icons[iconName] === icons['threeDots']) {
+    const selectorThreeDots = `(//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"])[1]`;
+    await this.page.locator(selectorThreeDots).click();
   } else {
     const selector = `(//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"])`;
     await this.page.locator(selector).click();
@@ -670,6 +674,10 @@ When(
     );
   }
 );
+
+When('I hover over the first post', async function (this: ICustomWorld) {
+  await this.page.locator(`(//article)[1]`).hover();
+});
 
 // Then(
 //   'I see that the last message contains {string} and was sent after {string}',
