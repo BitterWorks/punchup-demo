@@ -119,6 +119,10 @@ When(
         await this.page!.locator(`//input[@placeholder="${inputLabel}"]`).fill(`${inputValue}`);
       } else if (inputLabel === 'Message Hero') {
         await this.page!.locator(`//input[@placeholder="${inputLabel}"]`).fill(`${inputValue}`);
+      } else if (inputLabel === 'Untitled Post') {
+        await this.page!.locator(
+          `//div[div[normalize-space(text())="${inputLabel}"]]/preceding-sibling::div/div`
+        ).fill(`${inputValue}`);
       } else {
         const inputLabel2 = inputLabel.replaceAll('...', '');
         await this.fillInput(inputLabel2, inputValue);
@@ -381,11 +385,21 @@ When('I click on the {string} icon', async function (this: ICustomWorld, iconNam
     x: 'M205.7,194.3a8.1,8.1,0,0,1,0,11.4,8.2,8.2,0,0,1-11.4,0L128,139.3,61.7,205.7a8.2,8.2,0,0,1-11.4,0,8.1,8.1,0,0,1,0-11.4L116.7,128,50.3,61.7A8.1,8.1,0,0,1,61.7,50.3L128,116.7l66.3-66.4a8.1,8.1,0,0,1,11.4,11.4L139.3,128Z',
     menu: 'M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z',
     document:
-      'M213.7,66.3l-40-40A8.1,8.1,0,0,0,168,24H88A16,16,0,0,0,72,40V56H56A16,16,0,0,0,40,72V216a16,16,0,0,0,16,16H168a16,16,0,0,0,16-16V200h16a16,16,0,0,0,16-16V72A8.1,8.1,0,0,0,213.7,66.3ZM168,216H56V72h76.7L168,107.3V216Zm32-32H184V104a8.1,8.1,0,0,0-2.3-5.7l-40-40A8.1,8.1,0,0,0,136,56H88V40h76.7L200,75.3Zm-56-32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,152Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,184Z'
+      'M213.7,66.3l-40-40A8.1,8.1,0,0,0,168,24H88A16,16,0,0,0,72,40V56H56A16,16,0,0,0,40,72V216a16,16,0,0,0,16,16H168a16,16,0,0,0,16-16V200h16a16,16,0,0,0,16-16V72A8.1,8.1,0,0,0,213.7,66.3ZM168,216H56V72h76.7L168,107.3V216Zm32-32H184V104a8.1,8.1,0,0,0-2.3-5.7l-40-40A8.1,8.1,0,0,0,136,56H88V40h76.7L200,75.3Zm-56-32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,152Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,184Z',
+    emoji:
+      'M128,24a104,104,0,0,0,0,208,102.2,102.2,0,0,0,30.6-4.6,6.7,6.7,0,0,0,3.3-2l63.5-63.5a7.2,7.2,0,0,0,2-3.3A102.2,102.2,0,0,0,232,128,104.2,104.2,0,0,0,128,24Zm84.7,128L152,212.7A87.9,87.9,0,1,1,212.7,152ZM80,108a12,12,0,1,1,12,12A12,12,0,0,1,80,108Zm72,0a12,12,0,1,1,12,12A12,12,0,0,1,152,108Zm24.5,48a56,56,0,0,1-97,0,8,8,0,1,1,13.8-8,40.1,40.1,0,0,0,69.4,0,8,8,0,0,1,13.8,8Z',
+    image:
+      'M232,184V56a16,16,0,0,0-16-16H40A16,16,0,0,0,24,56V168h0v32a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V184ZM216,56V164.7L187.3,136a16.1,16.1,0,0,0-22.6,0L144,156.7,99.3,112a16.1,16.1,0,0,0-22.6,0L40,148.7V56Zm0,144H40V171.3l48-48L132.7,168a15.9,15.9,0,0,0,22.6,0L176,147.3l40,40V200Zm-68.5-91.5A11.9,11.9,0,0,1,144,100a12,12,0,0,1,24,0h0a12,12,0,0,1-12,12A12.3,12.3,0,0,1,147.5,108.5Z'
   };
   console.log(icons[iconName]);
-  const selector = `//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"]`;
-  await this.page.locator(selector).click();
+  if (icons[iconName] === icons['emoji']) {
+    const selectorEmoji = `(//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"])[last()]`;
+    await this.page.locator(selectorEmoji).click();
+    console.log(selectorEmoji);
+  } else {
+    const selector = `(//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"])`;
+    await this.page.locator(selector).click();
+  }
 });
 
 Then('I no longer see the search bar', async function (this: ICustomWorld) {
@@ -639,6 +653,21 @@ When(
   'I click on {string} user in the conversations menu',
   async function (this: ICustomWorld, user: string) {
     await this.page.locator(`//a[span[span[span[text()="${user}"]]]]`).click();
+  }
+);
+
+When('I click on {string} emoji', async function (this: ICustomWorld, emoji: string) {
+  await this.page.locator(`//button[@data-emoji="${emoji}"]`).click();
+});
+
+When(
+  `I upload {string} under {string}`,
+  async function (this: ICustomWorld, fileName: string, inputTitle: string) {
+    console.log(fileName);
+    const inputSelector = `//label[@for='${inputTitle}']`;
+    await this.page!.locator(inputSelector).setInputFiles(
+      `C:\\Users\\Jozka\\Documents\\Bitter Works\\punchup-demo\\media\\${fileName}`
+    );
   }
 );
 
