@@ -39,7 +39,7 @@ Feature: Create Post
         And pause
         And I click on the 'emoji' icon
         And pause
-        And I click on '😀' emoji
+        And I click on the '😀' emoji
         And pause
         And I click on 'Publish'
         And pause

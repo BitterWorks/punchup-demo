@@ -123,6 +123,14 @@ When(
         await this.page!.locator(
           `//div[div[normalize-space(text())="${inputLabel}"]]/preceding-sibling::div/div`
         ).fill(`${inputValue}`);
+      } else if (inputLabel === 'Name') {
+        await this.page!.locator(
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input`
+        ).fill(`${inputValue}`);
+      } else if (inputLabel === 'Tagline') {
+        await this.page!.locator(
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input`
+        ).fill(`${inputValue}`);
       } else {
         const inputLabel2 = inputLabel.replaceAll('...', '');
         await this.fillInput(inputLabel2, inputValue);
@@ -391,7 +399,9 @@ When('I click on the {string} icon', async function (this: ICustomWorld, iconNam
     image:
       'M232,184V56a16,16,0,0,0-16-16H40A16,16,0,0,0,24,56V168h0v32a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V184ZM216,56V164.7L187.3,136a16.1,16.1,0,0,0-22.6,0L144,156.7,99.3,112a16.1,16.1,0,0,0-22.6,0L40,148.7V56Zm0,144H40V171.3l48-48L132.7,168a15.9,15.9,0,0,0,22.6,0L176,147.3l40,40V200Zm-68.5-91.5A11.9,11.9,0,0,1,144,100a12,12,0,0,1,24,0h0a12,12,0,0,1-12,12A12.3,12.3,0,0,1,147.5,108.5Z',
     threeDots:
-      'M76,128a12,12,0,1,1-12-12A12,12,0,0,1,76,128Zm116-12a12,12,0,1,0,12,12A12,12,0,0,0,192,116Zm-64,0a12,12,0,1,0,12,12A12,12,0,0,0,128,116Z'
+      'M76,128a12,12,0,1,1-12-12A12,12,0,0,1,76,128Zm116-12a12,12,0,1,0,12,12A12,12,0,0,0,192,116Zm-64,0a12,12,0,1,0,12,12A12,12,0,0,0,128,116Z',
+    checkMark:
+      'M104,192a8.5,8.5,0,0,1-5.7-2.3l-56-56a8.1,8.1,0,0,1,11.4-11.4L104,172.7,210.3,66.3a8.1,8.1,0,0,1,11.4,11.4l-112,112A8.5,8.5,0,0,1,104,192Z'
   };
   console.log(icons[iconName]);
   if (icons[iconName] === icons['emoji']) {
@@ -660,7 +670,7 @@ When(
   }
 );
 
-When('I click on {string} emoji', async function (this: ICustomWorld, emoji: string) {
+When('I click on the {string} emoji', async function (this: ICustomWorld, emoji: string) {
   await this.page.locator(`//button[@data-emoji="${emoji}"]`).click();
 });
 
@@ -679,42 +689,79 @@ When('I hover over the first post', async function (this: ICustomWorld) {
   await this.page.locator(`(//article)[1]`).hover();
 });
 
-// Then(
-//   'I see that the last message contains {string} and was sent after {string}',
-//   async function (this: ICustomWorld, messageText: string, messageDateTime: string) {
-//     // Retrieve the last message sent
-//     const lastMessage = await this.page.waitForSelector(
-//       '(//div[@class="group relative"])[1]/div/span/span'
-//     );
+When(
+  'I hover over the {string} feed and click on the settings icon',
+  async function (this: ICustomWorld, feedTitle: string) {
+    await this.page.locator(`//a[div[div[text()="${feedTitle}"]]]`).hover();
+    await this.page
+      .locator(
+        `//a[div[div[text()="${feedTitle}"]]]/following-sibling::div/button/span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="M234.8,150.4l-14.9-19.8c.1-1.8,0-3.7,0-5.1l14.9-19.9a7.8,7.8,0,0,0,1.3-6.9,114.8,114.8,0,0,0-10.9-26.4,8.2,8.2,0,0,0-5.8-4l-24.5-3.5-3.7-3.7-3.5-24.5a8.2,8.2,0,0,0-4-5.8,114.8,114.8,0,0,0-26.4-10.9,7.8,7.8,0,0,0-6.9,1.3L130.6,36h-5.2L105.6,21.2a7.8,7.8,0,0,0-6.9-1.3A114.8,114.8,0,0,0,72.3,30.8a8.2,8.2,0,0,0-4,5.8L64.8,61.1l-3.7,3.7L36.6,68.3a8.2,8.2,0,0,0-5.8,4A114.8,114.8,0,0,0,19.9,98.7a7.8,7.8,0,0,0,1.3,6.9l14.9,19.8v5.1L21.2,150.4a7.8,7.8,0,0,0-1.3,6.9,114.8,114.8,0,0,0,10.9,26.4,8.2,8.2,0,0,0,5.8,4l24.5,3.5,3.7,3.7,3.5,24.5a8.2,8.2,0,0,0,4,5.8,114.8,114.8,0,0,0,26.4,10.9,7.6,7.6,0,0,0,2.1.3,7.7,7.7,0,0,0,4.8-1.6L125.4,220h5.2l19.8,14.8a7.8,7.8,0,0,0,6.9,1.3,114.8,114.8,0,0,0,26.4-10.9,8.2,8.2,0,0,0,4-5.8l3.5-24.6c1.2-1.2,2.6-2.5,3.6-3.6l24.6-3.5a8.2,8.2,0,0,0,5.8-4,114.8,114.8,0,0,0,10.9-26.4A7.8,7.8,0,0,0,234.8,150.4ZM128,172a44,44,0,1,1,44-44A44,44,0,0,1,128,172Z"]`
+      )
+      .click();
+  }
+);
 
-//     // Get the text content of the last message
-//     const lastMessageText = await lastMessage.textContent();
+When('I hover over the {string} feed', async function (this: ICustomWorld, feedTitle: string) {
+  await this.page.locator(`//a[div[div[text()="${feedTitle}"]]]`).hover();
+});
 
-//     console.log(lastMessage);
+When(
+  'I click on the {string} icon next to {string}',
+  async function (this: ICustomWorld, iconName: string, feedTitle: string) {
+    const icons = {
+      gear: 'M234.8,150.4l-14.9-19.8c.1-1.8,0-3.7,0-5.1l14.9-19.9a7.8,7.8,0,0,0,1.3-6.9,114.8,114.8,0,0,0-10.9-26.4,8.2,8.2,0,0,0-5.8-4l-24.5-3.5-3.7-3.7-3.5-24.5a8.2,8.2,0,0,0-4-5.8,114.8,114.8,0,0,0-26.4-10.9,7.8,7.8,0,0,0-6.9,1.3L130.6,36h-5.2L105.6,21.2a7.8,7.8,0,0,0-6.9-1.3A114.8,114.8,0,0,0,72.3,30.8a8.2,8.2,0,0,0-4,5.8L64.8,61.1l-3.7,3.7L36.6,68.3a8.2,8.2,0,0,0-5.8,4A114.8,114.8,0,0,0,19.9,98.7a7.8,7.8,0,0,0,1.3,6.9l14.9,19.8v5.1L21.2,150.4a7.8,7.8,0,0,0-1.3,6.9,114.8,114.8,0,0,0,10.9,26.4,8.2,8.2,0,0,0,5.8,4l24.5,3.5,3.7,3.7,3.5,24.5a8.2,8.2,0,0,0,4,5.8,114.8,114.8,0,0,0,26.4,10.9,7.6,7.6,0,0,0,2.1.3,7.7,7.7,0,0,0,4.8-1.6L125.4,220h5.2l19.8,14.8a7.8,7.8,0,0,0,6.9,1.3,114.8,114.8,0,0,0,26.4-10.9,8.2,8.2,0,0,0,4-5.8l3.5-24.6c1.2-1.2,2.6-2.5,3.6-3.6l24.6-3.5a8.2,8.2,0,0,0,5.8-4,114.8,114.8,0,0,0,10.9-26.4A7.8,7.8,0,0,0,234.8,150.4ZM128,172a44,44,0,1,1,44-44A44,44,0,0,1,128,172Z'
+    };
+    console.log(icons[iconName]);
+    const selector = `//a[div[div[text()="${feedTitle}"]]]/following-sibling::div/button/span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"]`;
+    await this.page.locator(selector).click();
+  }
+);
 
-//     // Check if the last message contains the specified text
-//     expect(lastMessageText).toContain(messageText);
+When('I clear the text under {string}', async function (this: ICustomWorld, heading: string) {
+  await this.page
+    .locator(`//div[label[text()="${heading}"]]/following-sibling::div/div/div/input`)
+    .fill('');
+});
 
-//     // Get the message sending time from attachments
-//     const savedDateTimeString = this.attachments[messageDateTime];
-//     const savedDateTime = new Date(savedDateTimeString);
+When(
+  'I select the input under {string} and replace the original text with {string}',
+  async function (this: ICustomWorld, heading: string, newText: string) {
+    await this.page
+      .locator(`//div[label[text()="${heading}"]]/following-sibling::div/div/div/input`)
+      .fill('');
+    await this.page
+      .locator(`//div[label[text()="${heading}"]]/following-sibling::div/div/div/input`)
+      .fill(`${newText}`);
+  }
+);
 
-//     // Get the sending time of the last message
-//     const lastMessageTimestampString = await this.page
-//       .locator(`(//div[@class="group relative"])[1]/div/div/div`)
-//       .textContent();
-//     const lastMessageTimestamp = new Date(parseInt(lastMessageTimestampString));
+When('I click on the check mark button', async function (this: ICustomWorld) {
+  await this.page.locator(`//button[@type="submit"]`).click();
+});
 
-//     console.log(lastMessageTimestamp);
+When('I click on the {string} Feed', async function (this: ICustomWorld, feedTitle: string) {
+  await this.page.locator(`//a[div[div[text()="${feedTitle}"]]]`).click();
+});
 
-//     // Assert that the last message was sent after the specified messageDateTime
-//     expect(lastMessageTimestamp.getTime()).toBeGreaterThan(savedDateTime.getTime());
-//   }
-// );
+Then('I see the {string} Feed', async function (this: ICustomWorld, feedTitleText: string) {
+  const selector = `//a[div[div[text()="${feedTitleText}"]]]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
+});
 
-// Then(
-//   'I see that the last message contains {string} and was sent after {string}',
-//   async function (this: ICustomWorld, messageText: string, messageDateTime: string) {
-//     const lastMessage =
-//   }
-// );
+Then(
+  'I see the {string} Feed tagline',
+  async function (this: ICustomWorld, feedTaglineText: string) {
+    const selector = `(//div[div]/following-sibling::div[text()="${feedTaglineText}"])[1]`;
+    const locator = await this.page.locator(selector);
+    await expect(locator).toBeVisible();
+  }
+);
+
+Then(
+  'I see the {string} emoji next to {string}',
+  async function (this: ICustomWorld, emojiName: string, feedTitle: string) {
+    const selector = `//div[span[text()="${emojiName}"]]/following-sibling::div/div[text()="${feedTitle}"]`;
+    await this.page.locator(selector).click();
+  }
+);
