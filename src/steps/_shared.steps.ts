@@ -127,11 +127,27 @@ When(
         ).fill(`${inputValue}`);
       } else if (inputLabel === 'Name') {
         await this.page!.locator(
-          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input`
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input | //div[label[text()="${inputLabel}"]]/following-sibling::div/input`
         ).fill(`${inputValue}`);
       } else if (inputLabel === 'Tagline') {
         await this.page!.locator(
           `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input`
+        ).fill(`${inputValue}`);
+      } else if (inputLabel === 'Slug') {
+        await this.page!.locator(
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/input`
+        ).fill(`${inputValue}`);
+      } else if (inputLabel === 'Member Nickname (Singular)') {
+        await this.page!.locator(
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/input`
+        ).fill(`${inputValue}`);
+      } else if (inputLabel === 'Members Nickname (Plural)') {
+        await this.page!.locator(
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/input`
+        ).fill(`${inputValue}`);
+      } else if (inputLabel === 'Description') {
+        await this.page!.locator(
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/textarea`
         ).fill(`${inputValue}`);
       } else {
         const inputLabel2 = inputLabel.replaceAll('...', '');
@@ -782,4 +798,10 @@ Then('I see the {string} text', async function (this: ICustomWorld, text: string
 
 When('I click on the {string} button', async function (this: ICustomWorld, btnText: string) {
   await this.page.locator(`//button[text()="${btnText}"]`).click();
+});
+
+Then('I see the {string} community', async function (this: ICustomWorld, titleText: string) {
+  const selector = `//div[button[text()="Community Feeds"]]/following-sibling::div/div/a/div/div[text()="${titleText}"]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
 });
