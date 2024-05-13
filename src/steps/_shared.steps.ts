@@ -73,7 +73,9 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
       `//a[div[text()="${btnText}"]]`,
       `(//button[text()='${btnText}'])[2]`,
       `//button[span[contains(text(), '${btnText}')]]`,
-      `//a[span[span[span[text()="${btnText}"]]]]`
+      `//a[span[span[span[text()="${btnText}"]]]]`,
+      `//button[div[div[text()="${btnText}"]]]`,
+      `//button[@role="${btnText}"]`
       // `//a[.//span[text()="${btnText}"]]`
     ].join(' | ') +
     ')';
@@ -765,3 +767,19 @@ Then(
     await this.page.locator(selector).click();
   }
 );
+
+When(
+  'I click on the toggle button next to {string}',
+  async function (this: ICustomWorld, titleText: string) {
+    await this.page.locator(`//button[div[text()="${titleText}"]]`).click();
+  }
+);
+
+Then('I see the {string} text', async function (this: ICustomWorld, text: string) {
+  const selector = `//p[text()="${text}"]`;
+  await this.page.locator(selector).click();
+});
+
+When('I click on the {string} button', async function (this: ICustomWorld, btnText: string) {
+  await this.page.locator(`//button[text()="${btnText}"]`).click();
+});
