@@ -85,7 +85,6 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
     selector += '[1]';
   }
   console.log(selector);
-  await this.page.pause();
   const locator = this.page.locator(selector);
   if (btnText === 'Close') {
     await locator.nth(1).click();
@@ -476,6 +475,11 @@ When('I click on the hamburger menu button', async function (this: ICustomWorld)
   await this.page.locator(selector).click();
 });
 
+When(`I click on jorge@0fxrlxug.mailosaur.net's Channel`, async function (this: ICustomWorld) {
+  const selector = `//button[@aria-haspopup][span[text()="jorge@0fxrlxug.mailosaur.net's Channel"]]`;
+  await this.page.locator(selector).click();
+});
+
 Then('I see the {string} title', async function (this: ICustomWorld, titleText: string) {
   const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1] | //div[text()="${titleText}" and contains(@class, "text-4xl")] | //span[text()='${titleText}'] | (//div[@class="text-3xl font-bold" and text()="${titleText}"])[1] | //div[@slot="left"]/div/div[2 and text()='${titleText}']`;
   const locator = await this.page.locator(selector);
@@ -517,7 +521,7 @@ Then('I see the {string} pop-up menu', async function (this: ICustomWorld, popup
 });
 
 Then('I see the {string} channel', async function (this: ICustomWorld, channelTitleText: string) {
-  const selector = `(((//ul/div/li)[last()])[span[text()="${channelTitleText}"]]`;
+  const selector = `((//ul/div/li)[last()])[span[text()="${channelTitleText}"]]`;
   // const selector = `//ul/div/li[span[text()="${channelTitleText}"]]`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();

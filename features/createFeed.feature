@@ -12,7 +12,6 @@ Feature: Create Feed
     @smoke
     Scenario: Without tagline
         And I click on 'Create'
-        And pause
         And I click on 'Feed'
         And pause
         And I input 'test no tagline' under 'Name'

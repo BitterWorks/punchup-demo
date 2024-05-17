@@ -13,21 +13,22 @@ Feature: Create Channel
     Scenario: Without tagline
         And I click on 'Create'
         And I click on 'Channel'
-        And I input 'test channel3' under 'Your Channel'
+        And I input 'test channel6' under 'Your Channel'
         And I click on 'Create Channel'
+        And I click on the 'x' icon
         And I click on 'Create'
         And I click on 'Post'
-        And I click on 'jorge@0fxrlxug.mailosaur.net\'s Channel'
-        Then I see the 'test channel3' channel
+        And I click on jorge@0fxrlxug.mailosaur.net's Channel
+        Then I see the 'test channel6' channel
 
     Scenario: With/using tagline
         And I click on 'Create'
-        And pause
         And I click on 'Channel'
-        And pause
-        And I input 'test' under 'Your Channel'
-        And pause
+        And I input 'testing testing' under 'Your Channel'
         And I input 'tagline' under 'A really great channel'
-        And pause
         And I click on 'Create Channel'
-        And pause
+        And I click on the 'x' icon
+        And I click on 'Create'
+        And I click on 'Post'
+        And I click on jorge@0fxrlxug.mailosaur.net's Channel
+        Then I see the 'testing testing' channel
