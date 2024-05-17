@@ -13,31 +13,19 @@ Feature: Create Feed
     Scenario: Without tagline
         And I click on 'Create'
         And I click on 'Feed'
-        And pause
-        And I input 'test no tagline' under 'Name'
-        And pause
+        And I input 'test without tagline' under 'Name'
         And I click on 'Pick a Nice Emoji'
-        And I click on the '🤩' emoji
+        And I click on the '🤭' emoji
         And I click on 'Create Feed'
-        And pause
-        Then I see the 'test' Feed
+        Then I see the 'test without tagline' feed
 
     Scenario: With tagline
         And I click on 'Create'
-        And pause
         And I click on 'Feed'
-        And pause
-        And I input 'test with tagline' under 'Name'
-        And pause
+        And I input 'test with tagline 6' under 'Name'
         And I click on 'Pick a Nice Emoji'
-        And I click on the '🤩' emoji
-        And pause
-        And I input 'tagline example' under 'Tagline'
-        And pause
+        And I click on the '😱' emoji
+        And I input 'tagline example 6' under 'Tagline'
         And I click on 'Create Feed'
-        And pause
-        And I hover over the 'test tagline' feed
-        And pause
-        And I click on the 'test with tagline' channel
-        And pause
-        Then I see 'tagline example' under 'Tagline'
+        And I click on the 'test with tagline 6' feed
+        Then I see 'tagline example 6' under 'test with tagline 6'

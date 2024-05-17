@@ -132,7 +132,7 @@ When(
         ).fill(`${inputValue}`);
       } else if (inputLabel === 'Tagline') {
         await this.page!.locator(
-          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input | //div[input]/preceding-sibling::div[label[text()="${inputLabel}"]]`
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input | //div[label[text()="${inputLabel}"]]/following-sibling::div/input`
         ).fill(`${inputValue}`);
       } else if (inputLabel === 'Slug') {
         await this.page!.locator(
@@ -771,18 +771,18 @@ When('I click on the {string} channel', async function (this: ICustomWorld, chan
   await this.page.locator(`//a[div[div[text()="${channelTitle}"]]]`).click();
 });
 
-When('I click on the {string} Feed', async function (this: ICustomWorld, feedTitle: string) {
+When('I click on the {string} feed', async function (this: ICustomWorld, feedTitle: string) {
   await this.page.locator(`//a[div[div[text()="${feedTitle}"]]]`).click();
 });
 
-Then('I see the {string} Feed', async function (this: ICustomWorld, feedTitleText: string) {
+Then('I see the {string} feed', async function (this: ICustomWorld, feedTitleText: string) {
   const selector = `//a[div[div[text()="${feedTitleText}"]]]`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();
 });
 
 Then(
-  'I see the {string} Feed tagline',
+  'I see the {string} feed tagline',
   async function (this: ICustomWorld, feedTaglineText: string) {
     const selector = `(//div[div]/following-sibling::div[text()="${feedTaglineText}"])[1]`;
     const locator = await this.page.locator(selector);
@@ -792,8 +792,8 @@ Then(
 
 Then(
   'I see {string} under {string}',
-  async function (this: ICustomWorld, titleText: string, underTitle: string) {
-    const selector = `//div[contains(@class, "scrollbars")]//div[text()="${underTitle}"]/following-sibling::div[text()="${titleText}"]`;
+  async function (this: ICustomWorld, underTitle: string, titleText: string) {
+    const selector = `(//div[div[text()="${titleText}"]]/following-sibling::div[text()="${underTitle}"])[1]`;
     await this.page.locator(selector).click();
   }
 );

@@ -17,7 +17,7 @@ Feature: Feed General Settings
         And I click on the 'checkMark' icon
         And I pause
         And I click on the 'x' icon
-        Then I see the 'New Name' Feed
+        Then I see the 'New Name' feed
 
     Scenario: Change the tagline of the feed
         When I hover over the 'New Name' feed
@@ -27,8 +27,8 @@ Feature: Feed General Settings
         And I click on the 'checkMark' icon
         And pause
         And I click on the 'x' icon
-        And I click on the "New Name" Feed
-        Then I see the 'tagline for testing' Feed tagline
+        And I click on the "New Name" feed
+        Then I see the 'tagline for testing' feed tagline
 
     Scenario: Change the icon of the feed
         When I hover over the 'New Name' feed
