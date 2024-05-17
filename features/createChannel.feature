@@ -12,13 +12,13 @@ Feature: Create Channel
     @smoke
     Scenario: Without tagline
         And I click on 'Create'
-        And pause
         And I click on 'Channel'
-        And pause
-        And I input 'test' under 'Your Channel'
-        And pause
+        And I input 'test channel3' under 'Your Channel'
         And I click on 'Create Channel'
-        And pause
+        And I click on 'Create'
+        And I click on 'Post'
+        And I click on 'jorge@0fxrlxug.mailosaur.net\'s Channel'
+        Then I see the 'test channel3' channel
 
     Scenario: With/using tagline
         And I click on 'Create'

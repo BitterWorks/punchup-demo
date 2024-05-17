@@ -12,7 +12,7 @@ Feature: Feed General Settings
     Scenario: Change the name of the feed
         When I hover over the 'New Name' feed
         And I click on the 'gear' icon next to 'New Name'
-        And I clear the text under "Name"
+        And I clear the text under 'Name'
         And I input 'New Name' under 'Name'
         And I click on the 'checkMark' icon
         And I pause

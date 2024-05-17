@@ -15,20 +15,30 @@ Feature: Create Feed
         And pause
         And I click on 'Feed'
         And pause
-        And I input 'test' under 'Your Feed'
+        And I input 'test no tagline' under 'Name'
         And pause
+        And I click on 'Pick a Nice Emoji'
+        And I click on the '🤩' emoji
         And I click on 'Create Feed'
         And pause
-        # Then I see the '' Feed
+        Then I see the 'test' Feed
 
     Scenario: With tagline
         And I click on 'Create'
         And pause
         And I click on 'Feed'
         And pause
-        And I input 'test' under 'Your Feed'
+        And I input 'test with tagline' under 'Name'
         And pause
-        And I input 'tagline' under 'Brevity is the soul of wit'
+        And I click on 'Pick a Nice Emoji'
+        And I click on the '🤩' emoji
+        And pause
+        And I input 'tagline example' under 'Tagline'
         And pause
         And I click on 'Create Feed'
         And pause
+        And I hover over the 'test tagline' feed
+        And pause
+        And I click on the 'test with tagline' channel
+        And pause
+        Then I see 'tagline example' under 'Tagline'

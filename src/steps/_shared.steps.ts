@@ -75,7 +75,9 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
       `//button[span[contains(text(), '${btnText}')]]`,
       `//a[span[span[span[text()="${btnText}"]]]]`,
       `//button[div[div[text()="${btnText}"]]]`,
-      `//button[@role="${btnText}"]`
+      `//button[@role="${btnText}"]`,
+      `//div/a[contains(@href, "/@") and text()="${btnText}"]`,
+      `//button[@aria-haspopup][span[text()="${btnText}"]]`
       // `//a[.//span[text()="${btnText}"]]`
     ].join(' | ') +
     ')';
@@ -131,7 +133,7 @@ When(
         ).fill(`${inputValue}`);
       } else if (inputLabel === 'Tagline') {
         await this.page!.locator(
-          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input`
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input | //div[input]/preceding-sibling::div[label[text()="${inputLabel}"]]`
         ).fill(`${inputValue}`);
       } else if (inputLabel === 'Slug') {
         await this.page!.locator(
@@ -148,6 +150,14 @@ When(
       } else if (inputLabel === 'Description') {
         await this.page!.locator(
           `//div[label[text()="${inputLabel}"]]/following-sibling::div/textarea`
+        ).fill(`${inputValue}`);
+      } else if (inputLabel === 'Display Name') {
+        await this.page!.locator(
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input`
+        ).fill(`${inputValue}`);
+      } else if (inputLabel === 'Handle') {
+        await this.page!.locator(
+          `//div[label[text()="${inputLabel}"]]/following-sibling::div/div/div/input`
         ).fill(`${inputValue}`);
       } else {
         const inputLabel2 = inputLabel.replaceAll('...', '');
@@ -467,7 +477,7 @@ When('I click on the hamburger menu button', async function (this: ICustomWorld)
 });
 
 Then('I see the {string} title', async function (this: ICustomWorld, titleText: string) {
-  const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1] | //div[text()="${titleText}" and contains(@class, "text-4xl")] | //span[text()='${titleText}'] | (//div[@class="text-3xl font-bold" and text()="${titleText}"])[1]`;
+  const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1] | //div[text()="${titleText}" and contains(@class, "text-4xl")] | //span[text()='${titleText}'] | (//div[@class="text-3xl font-bold" and text()="${titleText}"])[1] | //div[@slot="left"]/div/div[2 and text()='${titleText}']`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();
 });
@@ -506,6 +516,13 @@ Then('I see the {string} pop-up menu', async function (this: ICustomWorld, popup
   await expect(locator).toBeVisible();
 });
 
+Then('I see the {string} channel', async function (this: ICustomWorld, channelTitleText: string) {
+  const selector = `(((//ul/div/li)[last()])[span[text()="${channelTitleText}"]]`;
+  // const selector = `//ul/div/li[span[text()="${channelTitleText}"]]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
+});
+
 When('I click the PUNCHUP logo', async function (this: ICustomWorld) {
   const selector = `//a[@href="/"][*[name()='svg' and @id="logo"]]`;
   await this.page.locator(selector).click();
@@ -529,17 +546,6 @@ When('I click the {string} user result', async function (this: ICustomWorld, sea
   const selector = `//a[div[span[text()="${searchResult}"]]]`;
   await this.page.locator(selector).click();
 });
-
-// Then('I see the {string} user profile', async function (this: ICustomWorld, searchText: string) {
-//   const textInUsername = `//div[@class="text-xl font-bold dark:text-onyx-100"]`;
-//   const textInNickname = `//div[@class="dark:text-onyx-300"]`;
-//   const usernameText = await this.page
-//     .locator(`//div[@class="text-xl font-bold dark:text-onyx-100"]`)
-//     .textContent();
-//   const nicknameText = await this.page.locator(`//div[@class="dark:text-onyx-300"]`).textContent();
-//   const textContained = textInUsername || textInNickname;
-//   expect(textContained);
-// });
 
 Then('I see the {string} user profile', async function (this: ICustomWorld, searchText: string) {
   const usernameSelector = `//div[@class="text-xl font-bold dark:text-onyx-100"]`;
@@ -599,7 +605,7 @@ Then(
 
     const lastMessageTimestampAndNameString = await this.page
       .locator(
-        `(//div[@class="group relative"]//span[text()="jorge@0fxrlxug.mailosaur.net"]/following-sibling::span)[1]`
+        `(//div[@class="group relative"]//span[text()="tester J"]/following-sibling::span)[1]`
       )
       .textContent();
 
@@ -696,7 +702,7 @@ When(
   `I upload {string} under {string}`,
   async function (this: ICustomWorld, fileName: string, inputTitle: string) {
     console.log(fileName);
-    const inputSelector = `//label[@for='${inputTitle}']`;
+    const inputSelector = `//label[@for='${inputTitle}'] | //label[text()="${inputTitle}"]`;
     await this.page!.locator(inputSelector).setInputFiles(
       `C:\\Users\\Jozka\\Documents\\Bitter Works\\punchup-demo\\media\\${fileName}`
     );
@@ -757,6 +763,10 @@ When('I click on the check mark button', async function (this: ICustomWorld) {
   await this.page.locator(`//button[@type="submit"]`).click();
 });
 
+When('I click on the {string} channel', async function (this: ICustomWorld, channelTitle: string) {
+  await this.page.locator(`//a[div[div[text()="${channelTitle}"]]]`).click();
+});
+
 When('I click on the {string} Feed', async function (this: ICustomWorld, feedTitle: string) {
   await this.page.locator(`//a[div[div[text()="${feedTitle}"]]]`).click();
 });
@@ -773,6 +783,14 @@ Then(
     const selector = `(//div[div]/following-sibling::div[text()="${feedTaglineText}"])[1]`;
     const locator = await this.page.locator(selector);
     await expect(locator).toBeVisible();
+  }
+);
+
+Then(
+  'I see {string} under {string}',
+  async function (this: ICustomWorld, titleText: string, underTitle: string) {
+    const selector = `//div[contains(@class, "scrollbars")]//div[text()="${underTitle}"]/following-sibling::div[text()="${titleText}"]`;
+    await this.page.locator(selector).click();
   }
 );
 
@@ -804,4 +822,26 @@ Then('I see the {string} community', async function (this: ICustomWorld, titleTe
   const selector = `//div[button[text()="Community Feeds"]]/following-sibling::div/div/a/div/div[text()="${titleText}"]`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();
+});
+
+When('I click on the profile icon', async function (this: ICustomWorld) {
+  await this.page.locator(`//button[@id="headlessui-popover-button-9"]`).click();
+});
+
+Then(
+  'I see the {string} Display Name',
+  async function (this: ICustomWorld, displayNameText: string) {
+    const selector = `//a[text()="${displayNameText}"]`;
+    await this.page.locator(selector).click();
+  }
+);
+
+Then('I see the {string} Handle', async function (this: ICustomWorld, handleText: string) {
+  const selector = `//a[text()="${handleText}"]`;
+  await this.page.locator(selector).click();
+});
+
+When('I wait for {string} seconds', async function (this: ICustomWorld, numberAsString: string) {
+  const number = Number(`${numberAsString}000`);
+  await this.page.waitForTimeout(number);
 });

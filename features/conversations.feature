@@ -11,16 +11,11 @@ Feature: Conversations
     @smoke
     Scenario: Send a message with text
         When I click on the 'conversations' icon
-        And pause
-        # And I click on 'Hero'
-        And I click on 'Josef' user in the conversations menu
-        And pause
+        And I click on 'Joseftest' user in the conversations menu
         And I save the current datetime as 'initialDateTime'
-        And pause
-        # And I input 'text message 11' under 'Message Hero'
-        And I input 'text message 11' under 'Message Josef'
-        And pause
+        And I input 'text message 11' under 'Message Joseftest'
         And I press 'Enter'
+        And I wait for '1' seconds
         And pause
         Then I see that the last message contains 'text message 11' and was sent after 'initialDateTime'
         # Then NEW I see that the last message contains 'text message 11' and was sent after 'initialDateTime'
