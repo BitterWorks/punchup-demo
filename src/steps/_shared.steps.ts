@@ -492,6 +492,28 @@ Then('I see the {string} post title', async function (this: ICustomWorld, titleT
   await expect(locator).toBeVisible();
 });
 
+Then(
+  'I verify the number of communities displayed is correct',
+  async function (this: ICustomWorld) {
+    const selector = `//div[contains(text(), 'We’ve')]`;
+    const cardCount = await this.page
+      .locator(
+        `//div[@class="grid max-w-screen-2xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"]/a`
+      )
+      .count();
+    const locator = this.page.locator(selector);
+    const feedCount = await locator.textContent();
+    //extract the number from feedCount and make sure it's 1
+    // Extract the number (assuming it's always an integer)
+    const extractedNumber = parseInt(feedCount.match(/\d+/)[0], 10);
+    console.log(`Extracted number: ${extractedNumber}`);
+    console.log(`Number of cards: ${cardCount}`);
+    console.log(`${cardCount} === ${extractedNumber}`);
+    const countsMatch = cardCount === extractedNumber;
+    expect(countsMatch).toBeTruthy();
+  }
+);
+
 Then('I verify the number of feeds displayed is correct', async function (this: ICustomWorld) {
   const selector = `//div[contains(text(), 'We’ve')]`;
   const cardCount = await this.page
@@ -507,7 +529,6 @@ Then('I verify the number of feeds displayed is correct', async function (this: 
   console.log(`Extracted number: ${extractedNumber}`);
   console.log(`Number of cards: ${cardCount}`);
   console.log(`${cardCount} === ${extractedNumber}`);
-  await this.page.pause();
   const countsMatch = cardCount === extractedNumber;
   expect(countsMatch).toBeTruthy();
 });

@@ -13,12 +13,9 @@ Feature: Discover Communities
         When I click on the hamburger menu button
         And I click on 'Discover Communities'
         And I click on 'Memes'
-        And I see the 'Memes' title
+        Then I see the 'Memes' title
 
     Scenario: Checking the amount of Communities
         When I click on the hamburger menu button
-        And pause
         And I click on 'Discover Communities'
-        And pause
-        Then I verify the number of feeds displayed is correct
-        # don't forget to change the 'Feeds' step for 'Communities'
+        Then I verify the number of communities displayed is correct
