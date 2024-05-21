@@ -12,59 +12,59 @@ Feature: Create Post
     @smoke
     Scenario: Text-only post
         And I click on 'Create'
-        And pause
         And I click on 'Post'
-        And pause
-        And I input 'test' under 'Title'
-        And pause
+        And I input 'test post test pokus 1' under 'Title'
         And I click on 'Publish'
-        And pause
+        And refresh
+        Then I see the 'test post test pokus 1' post title
 
     Scenario: Expand and post
         And I click on 'Create'
-        And pause
         And I click on 'Post'
-        And pause
         And I click on 'Expand Editor'
-        And pause
-        And I input 'test' under 'Untitled Post'
-        And pause
+        And I input 'test post expanded 8 try' under 'Untitled Post'
         And I click on 'Publish'
-        And pause
+        And I wait for '1' seconds
+        And I click on the 'home' icon 
+        And I wait for '1' seconds
+        Then I see the 'test post expanded 8 try' post title
 
     Scenario: Emoji-only post
         And I click on 'Create'
-        And pause
         And I click on 'Post'
-        And pause
+        And I wait for '1' seconds
         And I click on the 'emoji' icon
-        And pause
         And I click on the '😀' emoji
-        And pause
         And I click on 'Publish'
         And pause
+        And refresh
+        Then I see the '😀' post title
 
     Scenario: Text with emoji post
         And I click on 'Create'
-        And pause
         And I click on 'Post'
-        And pause
-        And I input 'test' under 'Title'
-        And pause
+        And I input 'test hello test 2 ' under 'Title'
         And I click on the 'emoji' icon
-        And pause
-        And I click on '😀' emoji
-        And pause
+        And I click on the '😀' emoji
         And I click on 'Publish'
+        And refresh
+        Then I see the 'test hello test 2 😀' post title
+
+    Scenario: Image-only post
+        And I click on 'Create'
+        And I click on 'Post'
+        And I upload "dog.jpg" under "imageUpload"
+        And I wait for '3' seconds
+        And I click on 'Publish'
+        And refresh
         And pause
 
-    Scenario: Image post
+    Scenario: Image with text post
         And I click on 'Create'
-        And pause
         And I click on 'Post'
-        And pause
-        # And I click on the 'image' icon
+        And I input 'test image with text' under 'Title'
         And I upload "dog.jpg" under "imageUpload"
-        And pause
+        And I wait for '3' seconds
         And I click on 'Publish'
-        And pause
+        And refresh
+        Then I see the 'test image with text' post title

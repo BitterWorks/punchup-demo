@@ -438,7 +438,7 @@ When('I click on the {string} icon', async function (this: ICustomWorld, iconNam
     const selectorThreeDots = `(//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"])[1]`;
     await this.page.locator(selectorThreeDots).click();
   } else {
-    const selector = `(//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"])`;
+    const selector = `(//span[contains(@class, 'icon')]/*[name()="svg"]/*[name()="path" and @d="${icons[iconName]}"])`;
     await this.page.locator(selector).click();
   }
 });
@@ -482,6 +482,12 @@ When(`I click on jorge@0fxrlxug.mailosaur.net's Channel`, async function (this: 
 
 Then('I see the {string} title', async function (this: ICustomWorld, titleText: string) {
   const selector = `(//div[text()="${titleText}" and contains(@class, "text-3xl")])[1] | //div[text()="${titleText}" and contains(@class, "text-4xl")] | //span[text()='${titleText}'] | (//div[@class="text-3xl font-bold" and text()="${titleText}"])[1] | //div[@slot="left"]/div/div[2 and text()='${titleText}']`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
+});
+
+Then('I see the {string} post title', async function (this: ICustomWorld, titleText: string) {
+  const selector = `(//article//div[text()="${titleText}"])[last()]`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();
 });
@@ -718,6 +724,13 @@ When('I hover over the first post', async function (this: ICustomWorld) {
 });
 
 When(
+  'I hover over the post titled {string}',
+  async function (this: ICustomWorld, inputTitle: string) {
+    await this.page.locator(`//article//div[text()="${inputTitle}"]`).hover();
+  }
+);
+
+When(
   'I hover over the {string} feed and click on the settings icon',
   async function (this: ICustomWorld, feedTitle: string) {
     await this.page.locator(`//a[div[div[text()="${feedTitle}"]]]`).hover();
@@ -836,16 +849,27 @@ Then(
   'I see the {string} Display Name',
   async function (this: ICustomWorld, displayNameText: string) {
     const selector = `//a[text()="${displayNameText}"]`;
-    await this.page.locator(selector).click();
+    const locator = await this.page.locator(selector);
+    await expect(locator).toBeVisible();
   }
 );
 
 Then('I see the {string} Handle', async function (this: ICustomWorld, handleText: string) {
   const selector = `//a[text()="${handleText}"]`;
-  await this.page.locator(selector).click();
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
 });
 
 When('I wait for {string} seconds', async function (this: ICustomWorld, numberAsString: string) {
   const number = Number(`${numberAsString}000`);
   await this.page.waitForTimeout(number);
 });
+
+Then(
+  `I don't see a post with {string} title`,
+  async function (this: ICustomWorld, titleText: string) {
+    const selector = `//article//div[text()="${titleText}"]`;
+    const locator = await this.page.locator(selector);
+    await expect(locator).toBeVisible({ visible: false });
+  }
+);

@@ -11,12 +11,19 @@ Feature: Delete Post
 
     @smoke
     Scenario: Delete first post
-        And pause
         And I hover over the first post
+        And I click on the 'threeDots' icon
+        And I click on 'Delete Post'
+        And I click on 'Delete'
+        And refresh
+        Then I don't see a post with 'test post' title
+
+    Scenario: Delete specific post
+        And pause
+        And I hover over the post titled 'test post test random text'
         And pause
         And I click on the 'threeDots' icon
-        And pause
         And I click on 'Delete Post'
-        And pause
         And I click on 'Delete'
-        And pause
+        And refresh
+        Then I don't see a post with 'test post test random text' title
