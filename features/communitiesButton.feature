@@ -8,7 +8,7 @@ Feature: Communities Button
         Then I see the 'Punchup Communities' title
 
     Scenario: Clicking the Communities button while signed-in
-        And I click on 'Sign in / Register'
+        When I click on 'Sign in / Register'
         And I input 'jorge@0fxrlxug.mailosaur.net' under 'Email'
         And I click on 'Get Magic Link'
         And I wait for "jorge@0fxrlxug.mailosaur.net" to receive a "Sign In to Punchup" email

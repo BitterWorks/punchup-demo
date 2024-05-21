@@ -43,4 +43,3 @@ Feature: Theme Switch
         And I click on 'Hero'
         And pause
         Then I verify the 'body' section appearance
-        And pause

@@ -10,7 +10,7 @@ Feature: Create Community
         Then I am at the 'Personal' feed
 
     Scenario: Without Member Nickname
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Community'
         And I input 'test a' under 'Name'
         And I input 'test-a-community' under 'Slug'
@@ -21,7 +21,7 @@ Feature: Create Community
         Then I see the 'All test a' community
 
     Scenario: With Member Nickname (Singular)
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Community'
         And I input 'test1 a' under 'Name'
         And I input 'test-a-community1' under 'Slug'
@@ -33,7 +33,7 @@ Feature: Create Community
         Then I see the 'All test1 a' community
 
     Scenario: With Members Nickname (Plural)
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Community'
         And I input 'test2 a' under 'Name'
         And I input 'test-a-community2' under 'Slug'
@@ -45,7 +45,7 @@ Feature: Create Community
         Then I see the 'All test2 a' community
 
     Scenario: With Description
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Community'
         And I input 'test3 a' under 'Name'
         And I input 'test-a-community3' under 'Slug'

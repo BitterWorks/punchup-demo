@@ -11,7 +11,7 @@ Feature: Create Post
     
     @smoke
     Scenario: Text-only post
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Post'
         And I input 'test post test pokus 1' under 'Title'
         And I click on 'Publish'
@@ -19,7 +19,7 @@ Feature: Create Post
         Then I see the 'test post test pokus 1' post title
 
     Scenario: Expand and post
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Post'
         And I click on 'Expand Editor'
         And I input 'test post expanded 8 try' under 'Untitled Post'
@@ -30,7 +30,7 @@ Feature: Create Post
         Then I see the 'test post expanded 8 try' post title
 
     Scenario: Emoji-only post
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Post'
         And I wait for '1' seconds
         And I click on the 'emoji' icon
@@ -41,7 +41,7 @@ Feature: Create Post
         Then I see the '😀' post title
 
     Scenario: Text with emoji post
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Post'
         And I input 'test hello test 2 ' under 'Title'
         And I click on the 'emoji' icon
@@ -51,7 +51,7 @@ Feature: Create Post
         Then I see the 'test hello test 2 😀' post title
 
     Scenario: Image-only post
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Post'
         And I upload "dog.jpg" under "imageUpload"
         And I wait for '3' seconds
@@ -60,7 +60,7 @@ Feature: Create Post
         And pause
 
     Scenario: Image with text post
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Post'
         And I input 'test image with text' under 'Title'
         And I upload "dog.jpg" under "imageUpload"

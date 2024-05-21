@@ -11,7 +11,7 @@ Feature: Create Channel
 
     @smoke
     Scenario: Without tagline
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Channel'
         And I input 'test channel6' under 'Your Channel'
         And I click on 'Create Channel'
@@ -22,7 +22,7 @@ Feature: Create Channel
         Then I see the 'test channel6' channel
 
     Scenario: With/using tagline
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Channel'
         And I input 'testing testing' under 'Your Channel'
         And I input 'tagline' under 'A really great channel'

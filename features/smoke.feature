@@ -39,19 +39,19 @@ Feature: Smoke Suite
 
     Scenario: Open and close Search bar
         When I click on the 'lens' icon
-        When I click on the 'x' icon
+        And I click on the 'x' icon
         Then I no longer see the search bar
 
     Scenario: Validate the appearance of the Privacy and Policy
         When I click on the hamburger menu button
-        When I click on 'Privacy & Terms'
-        When I click on 'Privacy Policy'
+        And I click on 'Privacy & Terms'
+        And I click on 'Privacy Policy'
         Then I verify the 'center' section appearance
 
     Scenario: Access the New Movies Feed
         When I click on the hamburger menu button
-        When I click on 'Discover Feeds'
-        When I click on 'New Movies'
+        And I click on 'Discover Feeds'
+        And I click on 'New Movies'
         Then I see the 'New Movies' title
 
     Scenario: Validate the appearance of the dark mode home page

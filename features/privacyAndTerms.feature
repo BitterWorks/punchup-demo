@@ -11,12 +11,12 @@ Feature: Privacy and Terms
     
     Scenario: Validate the appearance of the Privacy and Policy
         When I click on the hamburger menu button
-        When I click on 'Privacy & Terms'
-        When I click on 'Privacy Policy'
+        And I click on 'Privacy & Terms'
+        And I click on 'Privacy Policy'
         Then I verify the 'center' section appearance
 
     Scenario: Validate the appearance of the Terms of Use
         When I click on the hamburger menu button
-        When I click on 'Privacy & Terms'
-        When I click on 'Terms of Use'
+        And I click on 'Privacy & Terms'
+        And I click on 'Terms of Use'
         Then I verify the 'center' section appearance

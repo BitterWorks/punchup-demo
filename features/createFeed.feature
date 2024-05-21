@@ -11,7 +11,7 @@ Feature: Create Feed
 
     @smoke
     Scenario: Without tagline
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Feed'
         And I input 'test without tagline' under 'Name'
         And I click on 'Pick a Nice Emoji'
@@ -20,7 +20,7 @@ Feature: Create Feed
         Then I see the 'test without tagline' feed
 
     Scenario: With tagline
-        And I click on 'Create'
+        When I click on 'Create'
         And I click on 'Feed'
         And I input 'test with tagline 6' under 'Name'
         And I click on 'Pick a Nice Emoji'
