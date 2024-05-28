@@ -13,8 +13,6 @@ Feature: Remove Feed
         When I hover over the 'new feed' feed
         And I click on the 'gear' icon next to 'new feed'
         And I click on 'Remove Feed'
-        And pause
         And I input 'forever' under 'forever'
-        And pause
         And I click on the 'Remove Feed' button
         And pause

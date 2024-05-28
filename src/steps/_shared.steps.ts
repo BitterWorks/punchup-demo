@@ -65,11 +65,7 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
       `//a[text()="${btnText}"]`,
       `(//button[normalize-space()="${btnText}"])[1]`,
       `//button[.//text()="${btnText}"]`,
-      // `//input[@value="${btnText}"]`,
-      // `//button[text()="${btnText}"]`,
-      // `//a[contains(normalize-space(),"${btnText}")]`,
       `//a[normalize-space(text())="${btnText}"]`,
-      // `//div[text()="${btnText}"]`,
       `//a[div[text()="${btnText}"]]`,
       `(//button[text()='${btnText}'])[2]`,
       `//button[span[contains(text(), '${btnText}')]]`,
@@ -77,12 +73,16 @@ When('I click on {string}', async function (this: ICustomWorld, btnText: string)
       `//button[div[div[text()="${btnText}"]]]`,
       `//button[@role="${btnText}"]`,
       `//div/a[contains(@href, "/@") and text()="${btnText}"]`,
-      `//button[@aria-haspopup][span[text()="${btnText}"]]`
+      `//button[@aria-haspopup][span[text()="${btnText}"]]`,
+      // switches at Subscribing feed
+      `//button[@role="switch"][div[text()="${btnText}"]]`
       // `//a[.//span[text()="${btnText}"]]`
     ].join(' | ') +
     ')';
   if (btnText === 'New Movies') {
     selector += '[1]';
+  } else if (btnText === 'Subscribe') {
+    selector = '(//feed//button[text()="Subscribe"])[2]';
   }
   console.log(selector);
   const locator = this.page.locator(selector);
@@ -181,6 +181,12 @@ When(
   async function (this: ICustomWorld, selectValue: string, selectLabel: string) {
     if (selectValue) {
       await this.selectOption(selectValue, selectLabel, null);
+    } else if (selectValue === 'New Name') {
+      await this.page
+        .locator(
+          `//div[text()="${selectLabel}"]/following-sibling::div/ul//li[span[text()="${selectValue}"]]/ancestor::div/button[@type="button"]`
+        )
+        .click();
     }
   }
 );
@@ -428,7 +434,14 @@ When('I click on the {string} icon', async function (this: ICustomWorld, iconNam
     threeDots:
       'M76,128a12,12,0,1,1-12-12A12,12,0,0,1,76,128Zm116-12a12,12,0,1,0,12,12A12,12,0,0,0,192,116Zm-64,0a12,12,0,1,0,12,12A12,12,0,0,0,128,116Z',
     checkMark:
-      'M104,192a8.5,8.5,0,0,1-5.7-2.3l-56-56a8.1,8.1,0,0,1,11.4-11.4L104,172.7,210.3,66.3a8.1,8.1,0,0,1,11.4,11.4l-112,112A8.5,8.5,0,0,1,104,192Z'
+      'M104,192a8.5,8.5,0,0,1-5.7-2.3l-56-56a8.1,8.1,0,0,1,11.4-11.4L104,172.7,210.3,66.3a8.1,8.1,0,0,1,11.4,11.4l-112,112A8.5,8.5,0,0,1,104,192Z',
+    star: 'M187.3,232a16.1,16.1,0,0,1-8.7-2.6l-50.5-31.9h-.2L81,227.2a18,18,0,0,1-20.1-.6,18.6,18.6,0,0,1-7-19.6l13.5-53.1a.8.8,0,0,0-.2-.8L22,115.5a16.8,16.8,0,0,1-5.2-18.1A16.4,16.4,0,0,1,31.4,86l59-3.8a.5.5,0,0,0,.4-.3l22-55.5a16.3,16.3,0,0,1,30.4,0l22,55.5a.5.5,0,0,0,.4.3l59,3.8a16.4,16.4,0,0,1,14.6,11.4,16.8,16.8,0,0,1-5.2,18.1l-45.2,37.6a.8.8,0,0,0-.2.8l14.5,57.3a16.6,16.6,0,0,1-6.3,17.7A16.8,16.8,0,0,1,187.3,232ZM128,181.5a16,16,0,0,1,8.7,2.5h0l50.4,31.9h.2a.7.7,0,0,0,.3-.3c.1-.1.1-.2,0-.6l-14.5-57.3a16.8,16.8,0,0,1,5.4-17l45.3-37.6c.1-.1.3-.3.1-.8s-.2-.4-.3-.4l-59.1-3.8a16.4,16.4,0,0,1-14.1-10.4L128.3,32.3c-.1-.3-.2-.3-.3-.3s-.2,0-.3.3L105.6,87.8A16.4,16.4,0,0,1,91.5,98.2L32.4,102c-.1,0-.2,0-.3.4s0,.7.1.8l45.3,37.6a16.8,16.8,0,0,1,5.4,17L69.4,211a2.5,2.5,0,0,0,.9,2.6,1.6,1.6,0,0,0,2.1.1L119.3,184A16,16,0,0,1,128,181.5Z',
+    starFilled:
+      'M234,115.5l-45.2,37.6,14.3,58.1A16.5,16.5,0,0,1,187.3,232a16.1,16.1,0,0,1-8.7-2.6l-50.5-31.9h-.2L81,227.2a18,18,0,0,1-20.1-.6,18.5,18.5,0,0,1-7-19.6l13.5-53.1L22,115.5a16.8,16.8,0,0,1-5.2-18.1A16.5,16.5,0,0,1,31.4,86l59-3.8,22.4-55.8A16.4,16.4,0,0,1,128,16h0a16.4,16.4,0,0,1,15.2,10.4l22,55.5L224.6,86a16.4,16.4,0,0,1,14.6,11.4A16.8,16.8,0,0,1,234,115.5Z',
+    addToFeed:
+      'M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm104,48H40a8,8,0,0,0,0,16H144a8,8,0,0,0,0-16Zm88,0H216V168a8,8,0,0,0-16,0v16H184a8,8,0,0,0,0,16h16v16a8,8,0,0,0,16,0V200h16a8,8,0,0,0,0-16Z',
+    punish:
+      'M221.7,34.3A8.1,8.1,0,0,0,216,32h0l-63.8.2a8.1,8.1,0,0,0-6.2,2.9L75.6,120.3,67.3,112a16.1,16.1,0,0,0-22.6,0L32,124.7a15.9,15.9,0,0,0,0,22.6l20.9,20.9-30,29.9a16.2,16.2,0,0,0,0,22.7l12.3,12.3a16.3,16.3,0,0,0,22.7,0l29.9-30L108.7,224a16.1,16.1,0,0,0,22.6,0L144,211.3a15.9,15.9,0,0,0,0-22.6l-8.3-8.3L220.9,110a8.1,8.1,0,0,0,2.9-6.2L224,40A8.1,8.1,0,0,0,221.7,34.3ZM120,212.7,99.1,191.8a15.9,15.9,0,0,0-22.6,0l-30,29.9L34.3,209.5l29.9-30a16.1,16.1,0,0,0,0-22.6L43.3,136,56,123.3l14.5,14.5h0l23.8,23.9h0L132.7,200ZM207.8,100l-83.5,69-13-13,54.4-54.3a8.1,8.1,0,0,0-11.4-11.4L100,144.7l-13-13,69-83.5,52-.2Z'
   };
   console.log(icons[iconName]);
   if (icons[iconName] === icons['emoji']) {
@@ -437,11 +450,58 @@ When('I click on the {string} icon', async function (this: ICustomWorld, iconNam
   } else if (icons[iconName] === icons['threeDots']) {
     const selectorThreeDots = `(//span[contains(@class, 'icon')]/*[name()='svg']/*[name()='path' and @d="${icons[iconName]}"])[1]`;
     await this.page.locator(selectorThreeDots).click();
+  } else if (icons[iconName] === icons['star']) {
+    const selectorStar = `(//button[span[contains(@class, 'icon')]/*[name()="svg"]/*[name()="path" and @d="${icons[iconName]}"]])[2]`;
+    await this.page.locator(selectorStar).click();
+  } else if (icons[iconName] === icons['starFilled']) {
+    const selectorStarFilled = `(//button[span[contains(@class, 'icon')]/*[name()="svg"]/*[name()="path" and @d="${icons[iconName]}"]])[2]`;
+    await this.page.locator(selectorStarFilled).click();
+  } else if (icons[iconName] === icons['punish']) {
+    const selectorPunish = `(//button[span[contains(@class, 'icon')]/*[name()="svg"]/*[name()="path" and @d="${icons[iconName]}"]])[1]`;
+    await this.page.locator(selectorPunish).click();
+  } else if (icons[iconName] === icons['addToFeed']) {
+    const selectorAddToFeed = `(//button[span[contains(@class, 'icon')]/*[name()="svg"]/*[name()="path" and @d="${icons[iconName]}"]])[1]`;
+    await this.page.locator(selectorAddToFeed).click();
   } else {
     const selector = `(//span[contains(@class, 'icon')]/*[name()="svg"]/*[name()="path" and @d="${icons[iconName]}"])`;
     await this.page.locator(selector).click();
   }
 });
+
+When('If the icon is filled I click on it', async function (this: ICustomWorld) {
+  const starFilledSvg =
+    'M234,115.5l-45.2,37.6,14.3,58.1A16.5,16.5,0,0,1,187.3,232a16.1,16.1,0,0,1-8.7-2.6l-50.5-31.9h-.2L81,227.2a18,18,0,0,1-20.1-.6,18.5,18.5,0,0,1-7-19.6l13.5-53.1L22,115.5a16.8,16.8,0,0,1-5.2-18.1A16.5,16.5,0,0,1,31.4,86l59-3.8,22.4-55.8A16.4,16.4,0,0,1,128,16h0a16.4,16.4,0,0,1,15.2,10.4l22,55.5L224.6,86a16.4,16.4,0,0,1,14.6,11.4A16.8,16.8,0,0,1,234,115.5Z';
+  const starFilled = this.page.locator(
+    `(//button[span[contains(@class, 'icon')]/*[name()="svg"]/*[name()="path" and @d="${starFilledSvg}"]])[2]`
+  );
+  if ((await starFilled.count()) > 0) {
+    await starFilled.click();
+  }
+});
+
+When(
+  'If the {string} feed is {string} I click on it',
+  async function (this: ICustomWorld, feedTitle: string, status: string) {
+    // const selector = `//button[@role="switch" and @aria-checked="${status}"][div/following-sibling::div[text()="${feedTitle}"]]`;
+    // const locator = await this.page.locator(selector);
+    // if (status === 'true') {
+    //   await locator.click();
+    // }
+    const toggleSwitch = this.page.locator(
+      `//button[@role="switch" and @aria-checked="true"][div/following-sibling::div[text()="${feedTitle}"]] | //button[@role="switch" and @aria-checked="false"][div/following-sibling::div[text()="${feedTitle}"]]`
+    );
+    const isToggleChecked = (await toggleSwitch.getAttribute('checked')) === 'true';
+    if (status === 'toggled') {
+      if (!isToggleChecked) {
+        await toggleSwitch.click();
+      }
+    } else if (status === 'untoggled') {
+      if (isToggleChecked) {
+        await toggleSwitch.click();
+      }
+    }
+  }
+);
 
 Then('I no longer see the search bar', async function (this: ICustomWorld) {
   const selector = `//div[div[input[@name="search"]]]`;
@@ -488,6 +548,22 @@ Then('I see the {string} title', async function (this: ICustomWorld, titleText: 
 
 Then('I see the {string} post title', async function (this: ICustomWorld, titleText: string) {
   const selector = `(//article//div[text()="${titleText}"])[last()]`;
+  const locator = await this.page.locator(selector);
+  await expect(locator).toBeVisible();
+});
+
+Then('I see the {string} button', async function (this: ICustomWorld, btnText: string) {
+  let selector =
+    '(' +
+    [
+      `//a[text()="${btnText}"]`,
+      `//button[text()="${btnText}"]`,
+      `//button[normalize-space()="${btnText}"]`
+    ].join(' | ') +
+    ')';
+  if (btnText === 'Subscribe') {
+    selector += '[2]';
+  }
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();
 });
@@ -827,7 +903,7 @@ Then(
 Then(
   'I see {string} under {string}',
   async function (this: ICustomWorld, underTitle: string, titleText: string) {
-    const selector = `(//div[div[text()="${titleText}"]]/following-sibling::div[text()="${underTitle}"])[1]`;
+    const selector = `(//div[div[text()="${titleText}"]]/following-sibling::div[text()="${underTitle}"])[1] | //div[button[text()="${titleText}"]]/following-sibling::div//div[text()="${underTitle}"]`;
     await this.page.locator(selector).click();
   }
 );
@@ -875,7 +951,7 @@ Then(
   }
 );
 
-Then('I see the {string} Handle', async function (this: ICustomWorld, handleText: string) {
+Then('I see the {string} handle', async function (this: ICustomWorld, handleText: string) {
   const selector = `//a[text()="${handleText}"]`;
   const locator = await this.page.locator(selector);
   await expect(locator).toBeVisible();

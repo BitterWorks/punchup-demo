@@ -15,7 +15,7 @@ Feature: Feed General Settings
         And I clear the text under 'Name'
         And I input 'New Name' under 'Name'
         And I click on the 'checkMark' icon
-        And I pause
+        And I wait for '4' seconds
         And I click on the 'x' icon
         Then I see the 'New Name' feed
 
@@ -25,7 +25,7 @@ Feature: Feed General Settings
         And I clear the text under 'Tagline'
         And I input 'tagline for testing' under 'Tagline'
         And I click on the 'checkMark' icon
-        And pause
+        And I wait for '4' seconds
         And I click on the 'x' icon
         And I click on the "New Name" feed
         Then I see the 'tagline for testing' feed tagline
@@ -35,6 +35,6 @@ Feature: Feed General Settings
         And I click on the 'gear' icon next to 'New Name'
         And I click on 'Change'
         And I click on the '🤠' emoji
+        And I wait for '4' seconds
         And I click on the 'x' icon
-        And pause
         Then I see the '🤠' emoji next to 'New Name'

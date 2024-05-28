@@ -18,29 +18,18 @@ Feature: Discover Feeds
     Scenario: Checking the amount of Feeds
         When I click on the hamburger menu button
         And I click on 'Discover Feeds'
-        And pause
         Then I verify the number of feeds displayed is correct
-    
-    Scenario: Subscribing to the Feed
+
+    Scenario: Add a Feed to Favorites
         When I click on the hamburger menu button
         And I click on 'Discover Feeds'
-        And pause
         And I click on 'Personal'
-        And pause
-        And go back
-        And pause
         And refresh
-        And pause
-        And I click on 'Personal'
         And go back
-        And I click on 'Personal'
-        And go back
+        And refresh
         And I click on 'New Movies'
-        And pause
-        And I click on 'Subscribe'
-        And pause
-        And I click on 'Done'
-
-# Scenario: Clicking the hamburger menu button
-    #     When I click on the 'menu' icon
-    #     And pause
+        And I wait for '2' seconds
+        And If the icon is filled I click on it
+        And I wait for '2' seconds
+        And I click on the 'star' icon
+        Then I see 'New Movies' under 'Favorites'

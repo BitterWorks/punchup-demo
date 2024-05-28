@@ -13,10 +13,10 @@ Feature: Create Post
     Scenario: Text-only post
         When I click on 'Create'
         And I click on 'Post'
-        And I input 'test post test pokus 1' under 'Title'
+        And I input 'test post test pokus 2' under 'Title'
         And I click on 'Publish'
         And refresh
-        Then I see the 'test post test pokus 1' post title
+        Then I see the 'test post test pokus 2' post title
 
     Scenario: Expand and post
         When I click on 'Create'

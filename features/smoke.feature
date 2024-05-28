@@ -28,13 +28,10 @@ Feature: Smoke Suite
         And I click on 'Get Magic Link'
         And I wait for "jorge@0fxrlxug.mailosaur.net" to receive a "Sign In to Punchup" email
         And I go to the "Sign In" link of the "Sign In to Punchup" email sent to "jorge@0fxrlxug.mailosaur.net"
-        And pause
-        And I click on "Create"
-        And I click on "Post"
+        And I click on 'Create'
+        And I click on 'Post'
         And I input 'This is my post' under 'Title'
-        And pause
         And I click on 'Publish'
-        And pause
         Then I see a toast message saying "You published a post to..."
 
     Scenario: Open and close Search bar
@@ -56,7 +53,5 @@ Feature: Smoke Suite
 
     Scenario: Validate the appearance of the dark mode home page
         When I click on the hamburger menu button
-        And pause
         And I click on 'Switch to Dark Mode'
         Then I verify the 'body' section appearance
-        And pause

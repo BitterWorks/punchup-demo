@@ -13,9 +13,6 @@ Feature: Feed Recommendations Settings
         When I hover over the 'New Name' feed
         And I click on the 'gear' icon next to 'New Name'
         And I click on 'Recommendations'
-        And pause
         And I click on 'switch'
-        And pause
         And I click on the 'x' icon
-        And pause
-        # Then I see the 'New Name' Feed
+        Then I see the 'New Name' feed
