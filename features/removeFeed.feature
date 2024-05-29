@@ -16,3 +16,4 @@ Feature: Remove Feed
         And I input 'forever' under 'forever'
         And I click on the 'Remove Feed' button
         And pause
+        Then I don't see a feed with 'new feed' title

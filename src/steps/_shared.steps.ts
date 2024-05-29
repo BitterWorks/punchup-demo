@@ -970,3 +970,12 @@ Then(
     await expect(locator).toBeVisible({ visible: false });
   }
 );
+
+Then(
+  `I don't see a feed with {string} title`,
+  async function (this: ICustomWorld, titleText: string) {
+    const selector = `//a[div[div[text()="${titleText}"]]]`;
+    const locator = await this.page.locator(selector);
+    await expect(locator).toBeVisible({ visible: false });
+  }
+);
