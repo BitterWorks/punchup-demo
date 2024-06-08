@@ -1,0 +1,2 @@
+*/10 * * * * curl -X POST -H "api-key: go41!qh2hsoajnlP409-8usqbn123e!@gafsg9h2" http://localhost:3000/healthcheck
+#*/15 * * * * curl -X POST -H "api-key: go41!qh2hsoajnlP409-8usqbn123e!@gafsg9h2" http://localhost:3000/smoke

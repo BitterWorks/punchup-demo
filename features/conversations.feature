@@ -9,7 +9,7 @@ Feature: Conversations
         And I go to the "Sign In" link of the "Sign In to Punchup" email sent to "jorge@0fxrlxug.mailosaur.net"
         Then I am at the 'Personal' feed
 
-    @smoke
+    @smoke @unstable
     Scenario: Send a message with text
         When I click on the 'conversations' icon
         And I click on 'Joseftest' user in the conversations menu

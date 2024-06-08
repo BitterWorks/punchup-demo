@@ -1,5 +1,4 @@
 import { logger, readJsonFile } from './utils';
-import { HEALTHCHECK_WEBHOOK } from './conts';
 import express, { NextFunction, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { exec } from 'child_process';
@@ -64,10 +63,10 @@ app.post('/smoke', (req: Request, res: Response) => {
     logger.info('----STDOUT----');
     logger.info(stdout);
     const jsonReport: JsonReportType = readJsonFile(`temp/${testRunId}/report.json`);
-    const body = generateTeamsMsgBodyFromReport(jsonReport);
-    logger.info(body);
+    // const body = generateTeamsMsgBodyFromReport(jsonReport);
+    logger.info(jsonReport);
 
-    res.status(200).send('Message sent');
+    res.status(200).send(jsonReport);
   });
 });
 
